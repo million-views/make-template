@@ -1,0 +1,22 @@
+{
+  "name": "my-turso-worker",
+  "version": "1.0.0",
+  "description": "A Cloudflare Worker with Turso database integration",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20231025.0",
+    "@libsql/client": "^0.3.6"
+  },
+  "devDependencies": {
+    "wrangler": "^3.15.0",
+    "vitest": "^0.34.6"
+  },
+  "author": "Test Author",
+  "license": "MIT"
+}

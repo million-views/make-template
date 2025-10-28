@@ -1,0 +1,16 @@
+{
+  "name": "my-d1-worker",
+  "main": "src/index.js",
+  "compatibility_date": "2023-10-25",
+  "account_id": "abc123def456ghi789jkl012mno345pq",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "my-d1-database",
+      "database_id": "d1db-12345678-90ab-cdef-1234-567890abcdef"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "development"
+  }
+}

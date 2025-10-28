@@ -1,0 +1,11 @@
+{
+  "name": "my-turso-worker",
+  "main": "src/index.js",
+  "compatibility_date": "2023-10-25",
+  "account_id": "abc123def456ghi789jkl012mno345pq",
+  "vars": {
+    "TURSO_DB_URL": "libsql://my-database-user.turso.io",
+    "TURSO_DB_AUTH_TOKEN": "your-auth-token-here",
+    "ENVIRONMENT": "development"
+  }
+}

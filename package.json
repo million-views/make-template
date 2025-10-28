@@ -1,0 +1,49 @@
+{
+  "name": "@m5nv/make-template",
+  "version": "1.0.0",
+  "description": "Convert existing Node.js projects into reusable templates compatible with @m5nv/create-scaffold",
+  "type": "module",
+  "bin": {
+    "make-template": "./src/bin/cli.js"
+  },
+  "main": "./src/lib/engine.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/**/*.test.js",
+    "test:unit": "node --test test/unit/**/*.test.js",
+    "test:integration": "node --test test/integration/**/*.test.js",
+    "test:functional": "node --test test/functional/**/*.test.js",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:functional",
+    "dev": "node src/bin/cli.js",
+    "validate": "npm run test:all",
+    "prepack": "npm run validate",
+    "prepublishOnly": "npm run validate",
+    "publish:dry": "npm publish --dry-run",
+    "publish:beta": "npm publish --tag beta",
+    "publish:latest": "npm publish --tag latest"
+  },
+  "keywords": [
+    "cli",
+    "template",
+    "scaffold",
+    "project-generator",
+    "nodejs"
+  ],
+  "author": "M5NV",
+  "license": "MIT",
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m5nv/make-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/m5nv/make-template/issues"
+  },
+  "homepage": "https://github.com/m5nv/make-template#readme"
+}
