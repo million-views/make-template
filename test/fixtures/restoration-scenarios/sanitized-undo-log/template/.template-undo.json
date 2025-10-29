@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.2.0",
+    "projectType": "generic",
+    "timestamp": "2024-10-27T10:30:00Z",
+    "placeholderFormat": "{{NAME}}"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "{{SANITIZED_VALUE}}",
+    "{{PROJECT_DESCRIPTION}}": "{{SANITIZED_VALUE}}",
+    "{{AUTHOR_NAME}}": "{{SANITIZED_VALUE}}",
+    "{{AUTHOR_EMAIL}}": "{{SANITIZED_VALUE}}",
+    "{{API_KEY}}": "{{SANITIZED_VALUE}}"
+  },
+  "fileOperations": [
+    {
+      "type": "modified",
+      "path": "package.json",
+      "originalContent": "{\n  \"name\": \"{{SANITIZED_VALUE}}\",\n  \"version\": \"1.0.0\",\n  \"description\": \"{{SANITIZED_VALUE}}\",\n  \"main\": \"index.js\",\n  \"author\": \"{{SANITIZED_VALUE}} <{{SANITIZED_VALUE}}>\",\n  \"license\": \"MIT\"\n}",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "deleted",
+      "path": ".env",
+      "originalContent": "DATABASE_URL=postgres://localhost:5432/{{SANITIZED_VALUE}}\nAPI_KEY={{SANITIZED_VALUE}}\nDEBUG=true",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    }
+  ],
+  "sanitized": true,
+  "sanitizationMap": {
+    "personalInfo": ["{{AUTHOR_NAME}}", "{{AUTHOR_EMAIL}}"],
+    "projectSpecific": ["{{PROJECT_NAME}}", "{{PROJECT_DESCRIPTION}}"],
+    "secrets": ["{{API_KEY}}"]
+  }
+}

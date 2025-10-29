@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.2.0",
+    "projectType": "generic",
+    "timestamp": "2024-10-27T10:30:00Z",
+    "placeholderFormat": "{{NAME}}"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "my-test-project",
+    "{{PROJECT_DESCRIPTION}}": "A test project for restoration testing",
+    "{{AUTHOR_NAME}}": "John Doe",
+    "{{AUTHOR_EMAIL}}": "john@example.com"
+  },
+  "fileOperations": [
+    {
+      "type": "modified",
+      "path": "package.json",
+      "originalContent": "{\n  \"name\": \"my-test-project\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A test project for restoration testing\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"start\": \"node index.js\",\n    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n  },\n  \"author\": \"John Doe <john@example.com>\",\n  \"license\": \"MIT\",\n  \"dependencies\": {\n    \"express\": \"^4.18.0\"\n  }\n}",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "modified",
+      "path": "index.js",
+      "originalContent": "const express = require('express');\nconst app = express();\nconst port = 3000;\n\napp.get('/', (req, res) => {\n  res.json({ \n    message: 'Hello from my-test-project!',\n    author: 'John Doe',\n    version: '1.0.0'\n  });\n});\n\napp.listen(port, () => {\n  console.log(`my-test-project listening at http://localhost:${port}`);\n});",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "modified",
+      "path": "README.md",
+      "originalContent": "# my-test-project\n\nA test project for restoration testing.\n\n## Setup\n\n1. Install dependencies:\n   ```bash\n   npm install\n   ```\n\n2. Start the server:\n   ```bash\n   npm start\n   ```\n\n## Author\n\nCreated by John Doe (john@example.com)",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "deleted",
+      "path": ".env",
+      "originalContent": "DATABASE_URL=postgres://localhost:5432/my_test_project\nAPI_KEY=secret-api-key-12345\nDEBUG=true\nPORT=3000",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "created",
+      "path": "template.json",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles"
+    },
+    {
+      "type": "created",
+      "path": "_setup.mjs",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles"
+    }
+  ],
+  "sanitized": false,
+  "sanitizationMap": {}
+}

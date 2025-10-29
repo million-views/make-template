@@ -1,0 +1,26 @@
+{
+  "name": "Basic Test Template",
+  "description": "A simple template for restoration testing",
+  "placeholders": [
+    {
+      "name": "PROJECT_NAME",
+      "description": "The name of your project",
+      "default": "my-project"
+    },
+    {
+      "name": "PROJECT_DESCRIPTION", 
+      "description": "A brief description of your project",
+      "default": "A new project"
+    },
+    {
+      "name": "AUTHOR_NAME",
+      "description": "Your name",
+      "default": "Your Name"
+    },
+    {
+      "name": "AUTHOR_EMAIL",
+      "description": "Your email address",
+      "default": "you@example.com"
+    }
+  ]
+}

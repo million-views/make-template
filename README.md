@@ -19,6 +19,7 @@ npx @m5nv/make-template --dry-run
 - ✅ **Smart project detection** - Automatically identifies Cloudflare Workers, Vite, and Node.js projects
 - ✅ **Safe placeholder replacement** - Converts project-specific values to template placeholders
 - ✅ **Intelligent cleanup** - Removes build artifacts while preserving essential source code
+- ✅ **Template restoration** - Reverse conversion to restore working project state for development
 - ✅ **Create-scaffold ready** - Generates _setup.mjs and template.json for seamless integration
 
 ## Usage Examples
@@ -75,6 +76,152 @@ npx @m5nv/make-template --placeholder-format "__NAME__"
 - `cf-turso` - Cloudflare Workers with Turso database  
 - `vite-react` - Vite-based React applications
 - `generic` - Generic Node.js projects (fallback)
+
+## Template Restoration
+
+The restoration feature allows template authors to reverse template conversion, returning a templatized project back to a working state. This enables efficient template development and testing workflows.
+
+### Restoration Options
+
+| Option | Description | Example |
+|--------|-------------|---------|
+| `--restore` | Restore template to working project | `--restore` |
+| `--restore-files <files>` | Restore only specific files | `--restore-files "package.json,README.md"` |
+| `--restore-placeholders` | Restore only placeholder values | `--restore-placeholders` |
+| `--sanitize-undo` | Remove sensitive data from undo log | `--sanitize-undo` |
+| `--generate-defaults` | Create restoration defaults file | `--generate-defaults` |
+
+### Template Author Workflow
+
+```bash
+# 1. Convert working project to template
+npx @m5nv/make-template
+
+# 2. Test template with create-scaffold
+npx @m5nv/create-scaffold my-template test-project
+
+# 3. Find issues, restore to working state
+npx @m5nv/make-template --restore
+
+# 4. Fix issues in working project
+# Edit files, test functionality
+
+# 5. Update template with fixes
+npx @m5nv/make-template
+```
+
+### Restoration Examples
+
+```bash
+# Preview restoration changes
+npx @m5nv/make-template --restore --dry-run
+
+# Full restoration (restore everything)
+npx @m5nv/make-template --restore
+
+# Selective file restoration
+npx @m5nv/make-template --restore-files "package.json,wrangler.jsonc"
+
+# Restore only placeholder values
+npx @m5nv/make-template --restore-placeholders
+
+# Generate defaults for automated restoration
+npx @m5nv/make-template --generate-defaults
+```
+
+### Undo Log Management
+
+The `.template-undo.json` file contains restoration data for template authors:
+
+**For Template Development:**
+```bash
+# Keep undo log for development workflow
+git add .template-undo.json
+git commit -m "Add template with restoration data"
+```
+
+**For Public Templates:**
+```bash
+# Use sanitized undo log for privacy
+npx @m5nv/make-template --sanitize-undo
+
+# Or exclude from repository
+echo ".template-undo.json" >> .gitignore
+```
+
+**Undo Log Best Practices:**
+- ✅ Safe to commit for template maintenance
+- ✅ create-scaffold ignores .template-undo.json automatically  
+- ✅ Use `--sanitize-undo` to remove sensitive information
+- ✅ Keep for template development, gitignore for public templates
+- ✅ Use `.restore-defaults.json` for automated restoration
+
+### Sanitization and Privacy
+
+Protect sensitive information when sharing templates:
+
+```bash
+# Create template with sanitized undo log
+npx @m5nv/make-template --sanitize-undo --dry-run
+
+# Generate defaults file for restoration
+npx @m5nv/make-template --generate-defaults
+
+# Edit .restore-defaults.json with safe defaults
+{
+  "defaults": {
+    "{{PROJECT_NAME}}": "${PWD##*/}",
+    "{{AUTHOR_NAME}}": "${USER}",
+    "{{AUTHOR_EMAIL}}": "dev@example.com"
+  }
+}
+
+# Restore using defaults (no prompts)
+npx @m5nv/make-template --restore
+```
+
+**Sanitization removes:**
+- Email addresses and personal identifiers
+- File paths containing usernames
+- API keys and sensitive configuration values
+- Author names and personal information
+
+**Sanitization preserves:**
+- File operation records
+- Placeholder mapping structure
+- Template functionality
+- Restoration capability
+
+### Troubleshooting Restoration
+
+**Undo log not found:**
+```bash
+# Solution: Create template first
+npx @m5nv/make-template
+```
+
+**Missing values during restoration:**
+```bash
+# Solution: Create defaults file
+npx @m5nv/make-template --generate-defaults
+
+# Edit .restore-defaults.json with your values
+# Then restore
+npx @m5nv/make-template --restore
+```
+
+**File conflicts during restoration:**
+```bash
+# Solution: Preview first, then selective restore
+npx @m5nv/make-template --restore --dry-run
+npx @m5nv/make-template --restore-files "package.json"
+```
+
+**Sanitized restoration prompts:**
+```bash
+# Solution: Use defaults or placeholder-only restore
+npx @m5nv/make-template --restore-placeholders
+```
 
 ## Installation
 

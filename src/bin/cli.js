@@ -9,9 +9,9 @@
 
 import { parseArgs } from 'node:util';
 import { access, constants } from 'node:fs/promises';
-import { join } from 'node:path';
 import { ConversionEngine } from '../lib/engine.js';
-import { PROJECT_TYPES, PLACEHOLDER_FORMATS } from '../lib/config.js';
+import { RestorationEngine } from '../lib/restoration/restoration-engine.js';
+import { PROJECT_TYPES } from '../lib/config.js';
 
 /**
  * CLI Options Schema for util.parseArgs
@@ -37,6 +37,26 @@ const OPTIONS_SCHEMA = {
   'placeholder-format': {
     type: 'string',
     default: '{{NAME}}'
+  },
+  'sanitize-undo': {
+    type: 'boolean',
+    default: false
+  },
+  // Restoration options
+  'restore': {
+    type: 'boolean',
+    default: false
+  },
+  'restore-files': {
+    type: 'string'
+  },
+  'restore-placeholders': {
+    type: 'boolean',
+    default: false
+  },
+  'generate-defaults': {
+    type: 'boolean',
+    default: false
   }
 };
 
@@ -51,16 +71,26 @@ DESCRIPTION:
   Convert existing Node.js projects into reusable templates compatible with 
   @m5nv/create-scaffold. Analyzes project structure, identifies project types,
   replaces project-specific values with placeholders, and generates template files.
+  
+  Also supports restoring templatized projects back to working state for 
+  template development and testing workflows.
 
 Usage:
   make-template [options]
 
-Options:
+CONVERSION OPTIONS:
   -h, --help                    Show this help message
       --dry-run                 Preview changes without executing them
   -y, --yes                     Skip confirmation prompts
       --type <type>             Force specific project type detection
       --placeholder-format <fmt> Specify placeholder format
+      --sanitize-undo           Remove sensitive data from undo log
+
+RESTORATION OPTIONS:
+      --restore                 Restore template back to working project
+      --restore-files <files>   Restore only specified files (comma-separated)
+      --restore-placeholders    Restore only placeholder values, keep files
+      --generate-defaults       Generate .restore-defaults.json configuration
 
 SUPPORTED PROJECT TYPES:
   cf-d1        Cloudflare Worker with D1 database
@@ -73,7 +103,7 @@ SUPPORTED PLACEHOLDER FORMATS:
   __NAME__     Double-underscore format
   %NAME%       Percent format
 
-Examples:
+CONVERSION EXAMPLES:
   make-template --dry-run
     Preview conversion without making changes
 
@@ -83,10 +113,70 @@ Examples:
   make-template --placeholder-format __NAME__ --dry-run
     Use double-underscore placeholders, preview only
 
+  make-template --sanitize-undo --dry-run
+    Preview conversion with sanitized undo log
+
+RESTORATION EXAMPLES:
+  make-template --restore --dry-run
+    Preview restoration without making changes
+
+  make-template --restore --yes
+    Restore template to working state, skip confirmations
+
+  make-template --restore-files "package.json,README.md"
+    Restore only specific files from undo log
+
+  make-template --restore-placeholders --dry-run
+    Preview placeholder restoration only
+
+  make-template --generate-defaults
+    Create .restore-defaults.json with default values
+
+  make-template --sanitize-undo --dry-run
+    Preview conversion with sanitized undo log (safe for commits)
+
+  make-template --restore --sanitize-undo
+    Restore from sanitized undo log (prompts for missing values)
+
+TEMPLATE AUTHOR WORKFLOW:
+  1. make-template                    # Convert working project to template
+  2. Test template with create-scaffold
+  3. make-template --restore          # Restore to working state
+  4. Fix issues and iterate
+  5. make-template                    # Update template
+
+UNDO LOG MANAGEMENT:
+  • .template-undo.json contains restoration data for template authors
+  • Safe to commit for template maintenance (use --sanitize-undo for privacy)
+  • create-scaffold ignores .template-undo.json automatically
+  • Keep undo log for template development, gitignore for public templates
+  • Use .restore-defaults.json to automate sanitized restoration
+
+TROUBLESHOOTING:
+  Undo log not found:
+    → Run make-template first to create template with undo log
+    → Check if .template-undo.json exists in project root
+
+  Restoration fails with missing values:
+    → Use --generate-defaults to create .restore-defaults.json
+    → Edit defaults file with your project-specific values
+    → Use environment variables: \${USER}, \${PWD} in defaults
+
+  Sanitized restoration prompts for values:
+    → Create .restore-defaults.json with default values
+    → Set promptForMissing: false to use defaults without prompting
+    → Use --restore-placeholders to restore values only
+
+  File conflicts during restoration:
+    → Use --dry-run to preview changes first
+    → Backup important files before restoration
+    → Use selective restoration: --restore-files "specific,files"
+
 REQUIREMENTS:
   - Must be run in a directory containing package.json
   - Project should be a valid Node.js project
   - Recommended to use version control before conversion
+  - For restoration: .template-undo.json must exist
 
 For more information, visit: https://github.com/m5nv/make-template
 `;
@@ -115,6 +205,46 @@ function validateArguments(options) {
     }
   }
 
+  // Validate restoration option combinations
+  const restorationOptions = ['restore', 'restore-files', 'restore-placeholders', 'generate-defaults'];
+  const activeRestorationOptions = restorationOptions.filter(opt => options[opt]);
+  
+  if (activeRestorationOptions.length > 1) {
+    // Allow restore with restore-files or restore-placeholders
+    if (options.restore && (options['restore-files'] || options['restore-placeholders'])) {
+      // This is valid - selective restoration
+    } else if (options['generate-defaults'] && activeRestorationOptions.length > 1) {
+      errors.push('--generate-defaults cannot be combined with other restoration options');
+    } else if (options['restore-files'] && options['restore-placeholders']) {
+      errors.push('--restore-files and --restore-placeholders cannot be used together');
+    }
+  }
+
+  // Validate restore-files format if specified
+  if (options['restore-files']) {
+    const files = options['restore-files'].split(',').map(f => f.trim());
+    if (files.some(f => f === '')) {
+      errors.push('--restore-files cannot contain empty file names');
+    }
+    if (files.some(f => f.includes('..'))) {
+      errors.push('--restore-files cannot contain path traversal sequences (..)');
+    }
+  }
+
+  // Validate that conversion and restoration options don't conflict
+  const conversionOnlyOptions = ['type'];
+  // Only check placeholder-format if it's not the default value
+  if (options['placeholder-format'] && options['placeholder-format'] !== '{{NAME}}') {
+    conversionOnlyOptions.push('placeholder-format');
+  }
+  
+  const hasConversionOnlyOptions = conversionOnlyOptions.some(opt => options[opt]);
+  const hasRestorationOptions = activeRestorationOptions.length > 0;
+  
+  if (hasConversionOnlyOptions && hasRestorationOptions) {
+    errors.push('Conversion options (--type, --placeholder-format) cannot be used with restoration options');
+  }
+
   return errors;
 }
 
@@ -132,6 +262,42 @@ async function validateProjectDirectory() {
   }
 
   return errors;
+}
+
+/**
+ * Generate .restore-defaults.json configuration file
+ */
+async function generateDefaultsFile() {
+  const { DefaultsManager } = await import('../lib/restoration/defaults-manager.js');
+  const defaultsManager = new DefaultsManager();
+  
+  try {
+    // Generate with common placeholders
+    const commonPlaceholders = [
+      '{{PROJECT_NAME}}',
+      '{{AUTHOR_NAME}}',
+      '{{AUTHOR_EMAIL}}',
+      '{{PROJECT_DESCRIPTION}}'
+    ];
+    
+    await defaultsManager.generateDefaultsFile(commonPlaceholders);
+    
+    console.log('✅ Generated .restore-defaults.json configuration file');
+    console.log('');
+    console.log('📝 Edit this file to customize default values for restoration:');
+    console.log('   • Use ${VARIABLE} for environment variable substitution');
+    console.log('   • Set promptForMissing: false to use defaults without prompting');
+    console.log('   • Add your project-specific placeholders and default values');
+    console.log('');
+    console.log('💡 Use this file with: make-template --restore');
+  } catch (error) {
+    if (error.message.includes('already exists')) {
+      console.log('⚠️  .restore-defaults.json already exists');
+      console.log('💡 Delete the existing file first or edit it directly');
+      return;
+    }
+    handleError(`Failed to create .restore-defaults.json: ${error.message}`);
+  }
 }
 
 /**
@@ -178,13 +344,14 @@ async function main() {
 
   const options = parsedArgs.values;
 
+  // Debug: log options for troubleshooting
+  // console.log('Parsed options:', JSON.stringify(options, null, 2));
+
   // Show help if requested or no arguments provided
   if (options.help) {
     displayHelp();
     process.exit(0);
   }
-
-  // Don't show help automatically - let the conversion engine handle it
 
   // Validate arguments
   const argumentErrors = validateArguments(options);
@@ -195,6 +362,33 @@ async function main() {
     process.exit(1);
   }
 
+  // Handle generate-defaults workflow
+  if (options['generate-defaults']) {
+    await generateDefaultsFile();
+    return;
+  }
+
+  // Handle restoration workflows
+  if (options.restore || options['restore-files'] || options['restore-placeholders']) {
+    try {
+      // Validate project directory for restoration
+      const projectErrors = await validateProjectDirectory();
+      if (projectErrors.length > 0) {
+        projectErrors.forEach(error => console.error(`Error: ${error}`));
+        console.error('No changes were made - validation failed before execution');
+        process.exit(1);
+      }
+
+      // Initialize and run restoration engine
+      const restorationEngine = new RestorationEngine();
+      await restorationEngine.restore(options);
+    } catch (error) {
+      handleError(error.message);
+    }
+    return;
+  }
+
+  // Handle conversion workflow (default)
   // Validate project directory
   const projectErrors = await validateProjectDirectory();
   if (projectErrors.length > 0) {

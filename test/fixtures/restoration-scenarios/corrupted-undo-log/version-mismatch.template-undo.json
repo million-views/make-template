@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "metadata": {
+    "makeTemplateVersion": "2.0.0",
+    "projectType": "generic",
+    "timestamp": "2024-10-27T10:30:00Z"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "test-project"
+  },
+  "fileOperations": [],
+  "newFormatField": "This field doesn't exist in v1.0.0"
+}

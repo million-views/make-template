@@ -141,25 +141,25 @@ describe('Cleanup Operations Tests', () => {
     });
   });
 
-  describe('Version Control Artifacts Removal', () => {
-    test('should plan removal of .git directory', async () => {
+  describe('Version Control Preservation', () => {
+    test('should preserve .git directory', async () => {
       const result = await runCLI(['--dry-run'], { 
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
       
       assert.strictEqual(result.code, 0, 'Should successfully plan cleanup');
-      assert.match(result.stdout, /\.git.*directory.*will be removed/i, 'Should plan .git directory removal');
-      assert.match(result.stdout, /version control.*cleanup/i, 'Should indicate version control cleanup');
+      assert.match(result.stdout, /\.git.*directory.*will be preserved/i, 'Should plan .git directory preservation');
+      assert.match(result.stdout, /git.*history.*preserved/i, 'Should indicate git history preservation');
     });
 
-    test('should warn about version control removal', async () => {
+    test('should confirm version control preservation', async () => {
       const result = await runCLI(['--dry-run'], { 
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
       
       assert.strictEqual(result.code, 0, 'Should successfully plan cleanup');
-      assert.match(result.stdout, /git.*history.*will be lost/i, 'Should warn about git history loss');
-      assert.match(result.stdout, /backup.*recommended/i, 'Should recommend backup');
+      assert.match(result.stdout, /git.*history.*will be preserved/i, 'Should confirm git history preservation');
+      assert.match(result.stdout, /backup.*recommended/i, 'Should still recommend backup');
     });
   });
 

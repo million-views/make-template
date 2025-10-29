@@ -1,0 +1,29 @@
+{
+  "name": "Sanitized Undo Log Test",
+  "description": "Tests restoration with sanitized undo logs using defaults",
+  "type": "sanitized-restoration",
+  "templatePath": "./template",
+  "undoLogPath": "./template/.template-undo.json",
+  "defaultsPath": "./.restore-defaults.json",
+  "expectedOutcome": {
+    "restorationSuccess": true,
+    "requiresDefaults": true,
+    "sanitizedValues": [
+      "{{AUTHOR_NAME}}",
+      "{{AUTHOR_EMAIL}}",
+      "{{PROJECT_NAME}}",
+      "{{API_KEY}}"
+    ],
+    "defaultsUsed": {
+      "{{PROJECT_NAME}}": "restored-project",
+      "{{AUTHOR_NAME}}": "Template User",
+      "{{AUTHOR_EMAIL}}": "user@example.com",
+      "{{API_KEY}}": "default-api-key"
+    }
+  },
+  "testScenarios": [
+    "sanitized-restoration-with-defaults",
+    "sanitized-restoration-missing-defaults",
+    "sanitized-restoration-interactive-prompts"
+  ]
+}

@@ -116,7 +116,6 @@ export class FileScanner {
   shouldCleanupDirectory(dirName) {
     const cleanupPatterns = [
       'node_modules',
-      '.git',
       'dist',
       'build',
       '.next',

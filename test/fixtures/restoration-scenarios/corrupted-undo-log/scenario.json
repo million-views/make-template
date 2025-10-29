@@ -1,0 +1,38 @@
+{
+  "name": "Corrupted Undo Log Tests",
+  "description": "Tests error handling for various undo log corruption scenarios",
+  "type": "error-scenarios",
+  "corruptedFiles": [
+    {
+      "file": "invalid-json.template-undo.json",
+      "errorType": "UNDO_LOG_CORRUPTED",
+      "description": "Invalid JSON syntax"
+    },
+    {
+      "file": "missing-version.template-undo.json", 
+      "errorType": "UNDO_LOG_CORRUPTED",
+      "description": "Missing required version field"
+    },
+    {
+      "file": "version-mismatch.template-undo.json",
+      "errorType": "UNDO_LOG_VERSION_MISMATCH", 
+      "description": "Unsupported undo log version"
+    },
+    {
+      "file": "missing-file-operations.template-undo.json",
+      "errorType": "UNDO_LOG_CORRUPTED",
+      "description": "Missing required fileOperations field"
+    }
+  ],
+  "expectedOutcome": {
+    "restorationSuccess": false,
+    "errorHandling": "graceful",
+    "userGuidance": "provided"
+  },
+  "testScenarios": [
+    "invalid-json-handling",
+    "missing-fields-validation",
+    "version-compatibility-check",
+    "error-message-clarity"
+  ]
+}

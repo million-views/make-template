@@ -1,0 +1,34 @@
+{
+  "name": "Basic Round-Trip Test",
+  "description": "Tests basic conversion → restoration cycle with a simple Node.js project",
+  "type": "round-trip",
+  "originalPath": "./original",
+  "templatePath": "./template",
+  "undoLogPath": "./template/.template-undo.json",
+  "expectedOutcome": {
+    "restorationSuccess": true,
+    "filesRestored": [
+      "package.json",
+      "index.js", 
+      "README.md",
+      ".env"
+    ],
+    "filesPreserved": [
+      "template.json",
+      "_setup.mjs",
+      ".template-undo.json"
+    ],
+    "placeholdersRestored": {
+      "{{PROJECT_NAME}}": "my-test-project",
+      "{{PROJECT_DESCRIPTION}}": "A test project for restoration testing",
+      "{{AUTHOR_NAME}}": "John Doe",
+      "{{AUTHOR_EMAIL}}": "john@example.com"
+    }
+  },
+  "testScenarios": [
+    "full-restoration",
+    "selective-file-restoration",
+    "placeholder-only-restoration",
+    "dry-run-preview"
+  ]
+}

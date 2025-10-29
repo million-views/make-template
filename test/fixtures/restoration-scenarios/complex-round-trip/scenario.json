@@ -1,0 +1,43 @@
+{
+  "name": "Complex Round-Trip Test",
+  "description": "Tests comprehensive restoration with multiple file types, configurations, and sensitive data",
+  "type": "complex-round-trip",
+  "originalPath": "./original",
+  "templatePath": "./template",
+  "undoLogPath": "./template/.template-undo.json",
+  "expectedOutcome": {
+    "restorationSuccess": true,
+    "filesRestored": [
+      "package.json",
+      "src/index.js",
+      "config/database.js", 
+      "README.md",
+      ".env"
+    ],
+    "filesPreserved": [
+      ".env.example",
+      "template.json",
+      "_setup.mjs",
+      ".template-undo.json"
+    ],
+    "filesRegenerated": [
+      "package-lock.json",
+      "node_modules/"
+    ],
+    "placeholdersRestored": {
+      "{{PROJECT_NAME}}": "complex-test-app",
+      "{{PROJECT_VERSION}}": "2.1.0",
+      "{{AUTHOR_NAME}}": "Jane Smith",
+      "{{AUTHOR_EMAIL}}": "jane.smith@company.com",
+      "{{DATABASE_NAME}}": "complex_test_app",
+      "{{API_SECRET}}": "super-secret-api-key-xyz789"
+    }
+  },
+  "testScenarios": [
+    "full-complex-restoration",
+    "selective-config-restoration",
+    "sensitive-data-handling",
+    "multi-directory-restoration",
+    "generated-files-handling"
+  ]
+}

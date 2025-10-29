@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.2.0",
+    "projectType": "generic-node",
+    "timestamp": "2024-10-27T10:30:00Z"
+    // Missing closing brace - invalid JSON
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "test-project"
+  },
+  "fileOperations": [

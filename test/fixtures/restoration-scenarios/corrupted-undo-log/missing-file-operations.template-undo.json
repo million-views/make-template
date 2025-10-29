@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.2.0",
+    "projectType": "generic",
+    "timestamp": "2024-10-27T10:30:00Z"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "test-project"
+  }
+}

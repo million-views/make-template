@@ -2,19 +2,22 @@
  * Cleanup Processing Operations
  * 
  * Safely removes files and directories while preserving essential template files.
+ * Extended with file categorization for template restoration support.
  */
 
 import { rm, stat, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { FileCategorizer } from '../utils/file-categorizer.js';
 
 export class CleanupProcessor {
   constructor() {
+    this.fileCategorizer = new FileCategorizer();
+    
     this.cleanupRules = {
       // Directories to remove
       directories: [
         'node_modules',
-        '.git',
         'dist',
         'build',
         '.next',
@@ -59,6 +62,7 @@ export class CleanupProcessor {
         'config/',
         'scripts/',
         'docs/',
+        '.git/',
         '*.md',
         '*.txt',
         'package.json',
@@ -123,6 +127,64 @@ export class CleanupProcessor {
   }
 
   /**
+   * Perform categorized cleanup with restoration metadata
+   * @param {string} projectPath - Path to the project directory
+   * @param {Object} options - Cleanup options
+   * @returns {Object} Cleanup result with categorization data
+   */
+  async performCategorizedCleanup(projectPath = '.', options = {}) {
+    const cleanupItems = [];
+    const errors = [];
+    const categorizedItems = {
+      generated: [],
+      userCreated: [],
+      templateFiles: [],
+      modified: []
+    };
+    
+    try {
+      // Identify cleanup items using categorization
+      const itemsToClean = await this.identifyCleanupItemsWithCategories(projectPath);
+      
+      // Process each item based on its category
+      for (const item of itemsToClean) {
+        try {
+          // Determine action based on category
+          const shouldRemove = this.shouldRemoveBasedOnCategory(item.category, options);
+          
+          if (shouldRemove) {
+            await this.removeItem(item.path, item.type);
+            cleanupItems.push(item);
+          }
+          
+          // Add to categorized results for undo log
+          if (categorizedItems[item.category]) {
+            categorizedItems[item.category].push(item);
+          }
+          
+        } catch (error) {
+          errors.push({
+            path: item.path,
+            type: item.type,
+            category: item.category,
+            error: error.message
+          });
+        }
+      }
+      
+      return {
+        success: true,
+        cleanedItems: cleanupItems,
+        categorizedItems: categorizedItems,
+        errors: errors
+      };
+      
+    } catch (error) {
+      throw new Error(`Categorized cleanup operation failed: ${error.message}`);
+    }
+  }
+
+  /**
    * Identify items that should be cleaned up
    * @param {string} projectPath - Path to scan
    */
@@ -168,6 +230,79 @@ export class CleanupProcessor {
       
     } catch (error) {
       throw new Error(`Failed to identify cleanup items: ${error.message}`);
+    }
+  }
+
+  /**
+   * Identify cleanup items with categorization for restoration
+   * @param {string} projectPath - Path to scan
+   * @returns {Array} Array of categorized cleanup items
+   */
+  async identifyCleanupItemsWithCategories(projectPath) {
+    const items = [];
+    const allPaths = [];
+    
+    try {
+      // Collect all potential cleanup paths
+      for (const dir of this.cleanupRules.directories) {
+        const dirPath = join(projectPath, dir);
+        if (await this.exists(dirPath) && await this.isDirectory(dirPath)) {
+          allPaths.push(dirPath);
+        }
+      }
+      
+      for (const file of this.cleanupRules.files) {
+        if (file.includes('*')) {
+          const globItems = await this.findGlobMatches(projectPath, file);
+          allPaths.push(...globItems.map(item => item.path));
+        } else {
+          const filePath = join(projectPath, file);
+          if (await this.exists(filePath) && await this.isFile(filePath)) {
+            allPaths.push(filePath);
+          }
+        }
+      }
+      
+      // Categorize each path
+      for (const path of allPaths) {
+        try {
+          const categorization = await this.fileCategorizer.categorizeFile(path);
+          
+          // Only include items that should be cleaned up based on preservation rules
+          if (!this.shouldPreserve(categorization.fileName)) {
+            items.push({
+              path: categorization.path,
+              type: categorization.isDirectory ? 'directory' : 'file',
+              name: categorization.fileName,
+              category: categorization.category,
+              storeContent: categorization.storeContent,
+              action: categorization.action,
+              regenerationCommand: categorization.regenerationCommand,
+              fileSize: categorization.fileSize,
+              warnings: categorization.warnings
+            });
+          }
+        } catch (categorizationError) {
+          // If categorization fails, fall back to basic cleanup item
+          const stats = await stat(path);
+          items.push({
+            path: path,
+            type: stats.isDirectory() ? 'directory' : 'file',
+            name: path.split('/').pop(),
+            category: 'userCreated', // Default fallback
+            storeContent: !stats.isDirectory(),
+            action: 'restore-content',
+            regenerationCommand: null,
+            fileSize: stats.size,
+            warnings: [`Categorization failed: ${categorizationError.message}`]
+          });
+        }
+      }
+      
+      return items;
+      
+    } catch (error) {
+      throw new Error(`Failed to identify categorized cleanup items: ${error.message}`);
     }
   }
 
@@ -331,6 +466,67 @@ export class CleanupProcessor {
   }
 
   /**
+   * Determine if an item should be removed based on its category
+   * @param {string} category - File category
+   * @param {Object} options - Cleanup options
+   * @returns {boolean} Whether the item should be removed
+   */
+  shouldRemoveBasedOnCategory(category, options = {}) {
+    // Template files should never be removed during cleanup
+    if (category === 'templateFiles') {
+      return false;
+    }
+    
+    // Modified files should not be removed (they get placeholder replacement instead)
+    if (category === 'modified') {
+      return false;
+    }
+    
+    // Generated files can be safely removed (they can be regenerated)
+    if (category === 'generated') {
+      return true;
+    }
+    
+    // User-created files removal depends on options
+    if (category === 'userCreated') {
+      // By default, remove user-created files during cleanup
+      // But allow override via options
+      return options.preserveUserFiles !== true;
+    }
+    
+    // Default to removing unknown categories
+    return true;
+  }
+
+  /**
+   * Get cleanup preview with categorization
+   * @param {string} projectPath - Path to scan
+   * @returns {Object} Categorized cleanup preview
+   */
+  async getCategorizedCleanupPreview(projectPath = '.') {
+    try {
+      const items = await this.identifyCleanupItemsWithCategories(projectPath);
+      
+      const preview = {
+        generated: items.filter(item => item.category === 'generated'),
+        userCreated: items.filter(item => item.category === 'userCreated'),
+        templateFiles: items.filter(item => item.category === 'templateFiles'),
+        modified: items.filter(item => item.category === 'modified'),
+        totalItems: items.length,
+        totalSize: items.reduce((sum, item) => sum + (item.fileSize || 0), 0),
+        contentStorageSize: items
+          .filter(item => item.storeContent)
+          .reduce((sum, item) => sum + (item.fileSize || 0), 0)
+      };
+      
+      return preview;
+      
+    } catch (error) {
+      throw new Error(`Failed to generate categorized cleanup preview: ${error.message}`);
+    }
+  }
+
+  /**
    * Add custom cleanup rules
    * @param {Object} customRules - Custom rules to add
    */
@@ -345,6 +541,65 @@ export class CleanupProcessor {
     
     if (customRules.preserve) {
       this.cleanupRules.preserve.push(...customRules.preserve);
+    }
+  }
+
+  /**
+   * Get restoration metadata for cleanup items
+   * @param {string} projectPath - Path to scan
+   * @returns {Object} Restoration metadata for all cleanup items
+   */
+  async getRestorationMetadata(projectPath = '.') {
+    try {
+      const items = await this.identifyCleanupItemsWithCategories(projectPath);
+      const metadata = {
+        fileOperations: [],
+        summary: {
+          totalFiles: items.length,
+          contentStorageSize: 0,
+          regenerationCommands: new Set()
+        }
+      };
+      
+      for (const item of items) {
+        const operation = {
+          type: 'deleted',
+          path: item.path,
+          category: item.category,
+          restorationAction: item.action,
+          regenerationCommand: item.regenerationCommand,
+          originalContent: null, // Will be populated if content should be stored
+          backupPath: null,
+          fileSize: item.fileSize,
+          warnings: item.warnings
+        };
+        
+        // Store content for restoration if needed
+        if (item.storeContent && !item.isDirectory) {
+          try {
+            const { readFile } = await import('node:fs/promises');
+            operation.originalContent = await readFile(item.path, 'utf8');
+            metadata.summary.contentStorageSize += item.fileSize;
+          } catch (readError) {
+            operation.warnings = operation.warnings || [];
+            operation.warnings.push(`Could not read content: ${readError.message}`);
+          }
+        }
+        
+        if (item.regenerationCommand) {
+          metadata.summary.regenerationCommands.add(item.regenerationCommand);
+        }
+        
+        metadata.fileOperations.push(operation);
+      }
+      
+      // Convert Set to Array for JSON serialization
+      metadata.summary.regenerationCommands = Array.from(metadata.summary.regenerationCommands);
+      
+      return metadata;
+      
+    } catch (error) {
+      throw new Error(`Failed to generate restoration metadata: ${error.message}`);
     }
   }
 
@@ -368,7 +623,7 @@ export class CleanupProcessor {
       // Check if we're in a git repository root
       const gitPath = join(projectPath, '.git');
       if (await this.exists(gitPath)) {
-        issues.push('Warning: .git directory will be removed');
+        // .git directory is now preserved - no warning needed
       }
       
       // Check for uncommitted changes (if git exists)

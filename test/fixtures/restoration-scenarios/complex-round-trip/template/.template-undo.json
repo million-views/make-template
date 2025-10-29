@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.2.0",
+    "projectType": "generic",
+    "timestamp": "2024-10-27T11:15:00Z",
+    "placeholderFormat": "{{NAME}}"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "complex-test-app",
+    "{{PROJECT_DESCRIPTION}}": "A complex application for comprehensive restoration testing",
+    "{{PROJECT_VERSION}}": "2.1.0",
+    "{{AUTHOR_NAME}}": "Jane Smith",
+    "{{AUTHOR_EMAIL}}": "jane.smith@company.com",
+    "{{DATABASE_NAME}}": "complex_test_app",
+    "{{DATABASE_USER}}": "jane",
+    "{{DATABASE_PASSWORD}}": "secret123",
+    "{{API_SECRET}}": "super-secret-api-key-xyz789",
+    "{{EMAIL_SERVICE_KEY}}": "email-service-key-abc123"
+  },
+  "fileOperations": [
+    {
+      "type": "modified",
+      "path": "package.json",
+      "originalContent": "{\n  \"name\": \"complex-test-app\",\n  \"version\": \"2.1.0\",\n  \"description\": \"A complex application for comprehensive restoration testing\",\n  \"main\": \"src/index.js\",\n  \"scripts\": {\n    \"start\": \"node src/index.js\",\n    \"dev\": \"nodemon src/index.js\",\n    \"build\": \"webpack --mode production\",\n    \"test\": \"jest\"\n  },\n  \"author\": \"Jane Smith <jane.smith@company.com>\",\n  \"license\": \"MIT\",\n  \"dependencies\": {\n    \"express\": \"^4.18.0\",\n    \"dotenv\": \"^16.0.0\",\n    \"cors\": \"^2.8.5\"\n  },\n  \"devDependencies\": {\n    \"nodemon\": \"^2.0.0\",\n    \"webpack\": \"^5.0.0\",\n    \"jest\": \"^29.0.0\"\n  }\n}",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "modified",
+      "path": "src/index.js",
+      "originalContent": "require('dotenv').config();\nconst express = require('express');\nconst cors = require('cors');\n\nconst app = express();\nconst port = process.env.PORT || 3000;\n\napp.use(cors());\napp.use(express.json());\n\napp.get('/', (req, res) => {\n  res.json({\n    name: 'complex-test-app',\n    version: '2.1.0',\n    author: 'Jane Smith',\n    environment: process.env.NODE_ENV || 'development'\n  });\n});\n\napp.get('/api/health', (req, res) => {\n  res.json({ status: 'healthy', timestamp: new Date().toISOString() });\n});\n\napp.listen(port, () => {\n  console.log(`complex-test-app server running on port ${port}`);\n});",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "modified",
+      "path": "config/database.js",
+      "originalContent": "module.exports = {\n  development: {\n    url: process.env.DATABASE_URL || 'postgresql://localhost:5432/complex_test_app',\n    dialect: 'postgres'\n  },\n  production: {\n    url: process.env.DATABASE_URL,\n    dialect: 'postgres',\n    ssl: true\n  }\n};",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "modified",
+      "path": "README.md",
+      "originalContent": "# complex-test-app\n\nA complex application for comprehensive restoration testing.\n\n## Features\n\n- Express.js server with CORS support\n- Environment-based configuration\n- Database integration with PostgreSQL\n- Redis caching support\n- Email service integration\n\n## Setup\n\n1. Install dependencies:\n   ```bash\n   npm install\n   ```\n\n2. Copy environment file:\n   ```bash\n   cp .env.example .env\n   ```\n\n3. Update `.env` with your configuration\n\n4. Start development server:\n   ```bash\n   npm run dev\n   ```\n\n## API Endpoints\n\n- `GET /` - Application info\n- `GET /api/health` - Health check\n\n## Author\n\nCreated by Jane Smith (jane.smith@company.com)\n\n## License\n\nMIT",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "deleted",
+      "path": ".env",
+      "originalContent": "NODE_ENV=development\nPORT=3000\nDATABASE_URL=postgresql://jane:secret123@localhost:5432/complex_test_app\nAPI_SECRET=super-secret-api-key-xyz789\nREDIS_URL=redis://localhost:6379\nEMAIL_SERVICE_KEY=email-service-key-abc123",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "userCreated"
+    },
+    {
+      "type": "deleted",
+      "path": "package-lock.json",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "regenerate",
+      "category": "generated",
+      "regenerationCommand": "npm install"
+    },
+    {
+      "type": "deleted",
+      "path": "node_modules/",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "regenerate",
+      "category": "generated",
+      "regenerationCommand": "npm install"
+    },
+    {
+      "type": "created",
+      "path": "template.json",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles"
+    },
+    {
+      "type": "created",
+      "path": "_setup.mjs",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles"
+    }
+  ],
+  "sanitized": false,
+  "sanitizationMap": {}
+}

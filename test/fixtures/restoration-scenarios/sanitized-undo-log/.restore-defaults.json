@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "defaults": {
+    "{{PROJECT_NAME}}": "restored-project",
+    "{{PROJECT_DESCRIPTION}}": "A restored project from template",
+    "{{AUTHOR_NAME}}": "Template User",
+    "{{AUTHOR_EMAIL}}": "user@example.com",
+    "{{API_KEY}}": "default-api-key"
+  },
+  "environmentVariables": true,
+  "promptForMissing": false
+}

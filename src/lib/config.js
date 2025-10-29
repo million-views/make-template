@@ -35,7 +35,6 @@ export const PLACEHOLDER_FORMATS = {
 export const CLEANUP_RULES = {
   directories: [
     'node_modules',
-    '.git',
     'dist',
     'build',
     '.next',
@@ -54,6 +53,7 @@ export const CLEANUP_RULES = {
     'migrations/',
     'src/',
     'public/',
+    '.git/',
     '*.md',
     'package.json',
     'wrangler.jsonc',
@@ -65,5 +65,12 @@ export const ERROR_CODES = {
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   FILESYSTEM_ERROR: 'FILESYSTEM_ERROR',
   PROCESSING_ERROR: 'PROCESSING_ERROR',
-  USER_CANCELLED: 'USER_CANCELLED'
+  USER_CANCELLED: 'USER_CANCELLED',
+  // Restoration-specific error codes
+  UNDO_LOG_NOT_FOUND: 'UNDO_LOG_NOT_FOUND',
+  UNDO_LOG_CORRUPTED: 'UNDO_LOG_CORRUPTED',
+  UNDO_LOG_VERSION_MISMATCH: 'UNDO_LOG_VERSION_MISMATCH',
+  RESTORATION_CONFLICT: 'RESTORATION_CONFLICT',
+  MISSING_RESTORATION_VALUES: 'MISSING_RESTORATION_VALUES',
+  RESTORATION_PARTIAL_FAILURE: 'RESTORATION_PARTIAL_FAILURE'
 };

@@ -13,18 +13,12 @@ import FileProcessor from './processors/file-processor.js';
 import { CleanupProcessor } from './processors/cleanup-processor.js';
 import { SetupGenerator } from './generators/setup-generator.js';
 import { MetadataGenerator } from './generators/metadata-generator.js';
+import { UndoLogManager } from './restoration/undo-log-manager.js';
+import { Sanitizer } from './restoration/sanitizer.js';
 import { Logger } from './utils/logger.js';
 import { FSUtils } from './utils/fs-utils.js';
 import { ERROR_CODES } from './config.js';
-
-export class MakeTemplateError extends Error {
-  constructor(message, code, details = {}) {
-    super(message);
-    this.name = 'MakeTemplateError';
-    this.code = code;
-    this.details = details;
-  }
-}
+import { MakeTemplateError } from './utils/errors.js';
 
 export class ConversionEngine {
   constructor() {
@@ -36,6 +30,8 @@ export class ConversionEngine {
     this.cleanupProcessor = new CleanupProcessor();
     this.setupGenerator = new SetupGenerator();
     this.metadataGenerator = new MetadataGenerator();
+    this.undoLogManager = new UndoLogManager();
+    this.sanitizer = new Sanitizer();
   }
 
   async convert(options) {
@@ -355,6 +351,11 @@ export class ConversionEngine {
       }
     }
     
+    // Show sanitization preview if requested
+    if (plan.options['sanitize-undo']) {
+      await this.displaySanitizationPreview(plan);
+    }
+    
     this.logger.info('✅ No changes were made (dry run mode)');
     this.logger.info('✅ Template conversion completed');
     this.logger.info('');
@@ -378,7 +379,7 @@ export class ConversionEngine {
     this.logger.info(`   • ${deleteCount} files will be deleted`);
     this.logger.info(`   • ${createCount} files will be created`);
     this.logger.info('');
-    this.logger.warn('⚠️  Git history will be lost (if .git directory exists)');
+    this.logger.info('✅ Git history will be preserved (.git directory maintained)');
     this.logger.warn('⚠️  Backup recommended before proceeding');
     this.logger.info('');
     
@@ -396,6 +397,11 @@ export class ConversionEngine {
     
     if (plan.options.placeholderFormat !== '{{PLACEHOLDER_NAME}}') {
       this.logger.info(`🔧 Using custom placeholder format: ${plan.options.placeholderFormat}`);
+    }
+    
+    // Show sanitization information if requested
+    if (plan.options['sanitize-undo']) {
+      await this.displaySanitizationConfirmation(plan);
     }
     
     this.logger.info('');
@@ -501,10 +507,107 @@ export class ConversionEngine {
     }
   }
 
+  async displaySanitizationConfirmation(plan) {
+    try {
+      // Generate a temporary undo log for preview
+      const tempUndoLog = await this.undoLogManager.createUndoLog(plan, plan.options);
+      
+      // Preview sanitization
+      const preview = await this.sanitizer.previewSanitization(tempUndoLog);
+      
+      if (preview.wouldSanitize) {
+        this.logger.info('🔒 Sanitization enabled - sensitive data will be removed:');
+        this.logger.info(`   • ${preview.potentialItemsToRemove} items will be sanitized`);
+        this.logger.info(`   • Categories: ${preview.categoriesAffected.join(', ')}`);
+        this.logger.info('   • Undo log will be safe for version control');
+        this.logger.warn('   ⚠️  You may need to provide values during restoration');
+      } else {
+        this.logger.info('🔒 Sanitization enabled but no sensitive data detected');
+        this.logger.info('   • Undo log appears safe without sanitization');
+      }
+      
+    } catch (error) {
+      this.logger.warn(`Could not preview sanitization: ${error.message}`);
+      this.logger.info('🔒 Sanitization will still be applied as requested');
+    }
+  }
+
+  async displaySanitizationPreview(plan) {
+    try {
+      this.logger.info('🔒 Sanitization Preview:');
+      this.logger.info('');
+      
+      // Generate a temporary undo log for preview
+      const tempUndoLog = await this.undoLogManager.createUndoLog(plan, plan.options);
+      
+      // Preview sanitization
+      const preview = await this.sanitizer.previewSanitization(tempUndoLog);
+      
+      if (preview.wouldSanitize) {
+        this.logger.info(`📊 Sanitization would affect ${preview.potentialItemsToRemove} items:`);
+        this.logger.info('');
+        
+        // Show categories that would be affected
+        for (const category of preview.categoriesAffected) {
+          const details = preview.details[category];
+          if (details) {
+            this.logger.info(`   🔹 ${details.description}:`);
+            this.logger.info(`      • ${details.itemCount} items would be sanitized`);
+            
+            // Show examples
+            if (details.examples && details.examples.length > 0) {
+              this.logger.info('      • Examples:');
+              for (const example of details.examples) {
+                this.logger.info(`        - ${example.type}`);
+              }
+              if (details.hasMore) {
+                this.logger.info('        - ... and more');
+              }
+            }
+            this.logger.info('');
+          }
+        }
+        
+        this.logger.info('🔒 Sanitized undo log would be safe for version control');
+        this.logger.info('💡 Original functionality would be preserved');
+        this.logger.info('⚠️  You may need to provide values during restoration');
+        
+      } else {
+        this.logger.info('✅ No sensitive data detected in undo log');
+        this.logger.info('💡 Undo log appears safe for sharing without sanitization');
+      }
+      
+      this.logger.info('');
+      
+    } catch (error) {
+      this.logger.warn(`Could not preview sanitization: ${error.message}`);
+    }
+  }
+
   async executePlan(plan) {
-    const { actions } = plan;
+    const { actions, options } = plan;
     
     try {
+      // Generate undo log before making any changes
+      this.logger.info('📋 Generating undo log for restoration...');
+      const undoLog = await this.undoLogManager.createUndoLog(plan, options);
+      
+      // Apply sanitization if requested
+      if (options['sanitize-undo']) {
+        const sanitizationResult = await this.sanitizer.sanitizeUndoLog(undoLog, options);
+        undoLog = sanitizationResult.sanitizedUndoLog;
+        
+        this.logger.info('🔒 Undo log sanitized for privacy');
+        if (sanitizationResult.report.itemsRemoved > 0) {
+          this.logger.info(`   • ${sanitizationResult.report.itemsRemoved} items sanitized`);
+          this.logger.info(`   • Categories: ${sanitizationResult.report.categoriesAffected.join(', ')}`);
+        }
+      }
+      
+      // Save undo log atomically
+      await this.undoLogManager.saveUndoLog(undoLog, '.template-undo.json');
+      this.logger.info('   ✅ Created .template-undo.json');
+      
       // Execute modifications
       const modifyActions = actions.filter(a => a.type === 'modify');
       if (modifyActions.length > 0) {
