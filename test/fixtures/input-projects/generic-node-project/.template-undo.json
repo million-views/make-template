@@ -3,56 +3,52 @@
   "metadata": {
     "makeTemplateVersion": "1.0.0",
     "projectType": "generic",
-    "timestamp": "2025-10-28T21:27:09.187Z",
-    "placeholderFormat": "{{PLACEHOLDER_NAME}}"
+    "timestamp": "2025-10-30T06:19:33.258Z",
+    "placeholderFormat": "{{NAME}}"
   },
   "originalValues": {
-    "{{PROJECT_NAME}}": "{{PROJECT_NAME}}",
-    "{{PROJECT_DESCRIPTION}}": "{{PROJECT_DESCRIPTION}}",
-    "{{AUTHOR}}": "{{AUTHOR}}",
-    "{{REPOSITORY_URL}}": "{{REPOSITORY_URL}}",
-    "{{README_TITLE}}": "{{README_TITLE}}"
+    "{{NAME}}": "{{NAME}}"
   },
   "fileOperations": [
     {
       "type": "modified",
       "path": "package.json",
-      "originalContent": "{\n  \"name\": \"{{PROJECT_NAME}}\",\n  \"version\": \"1.0.0\",\n  \"description\": \"{{PROJECT_DESCRIPTION}}\",\n  \"main\": \"src/index.js\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"start\": \"node src/index.js\",\n    \"dev\": \"node --watch src/index.js\",\n    \"test\": \"node --test test/**/*.test.js\"\n  },\n  \"dependencies\": {\n    \"express\": \"^4.18.2\"\n  },\n  \"devDependencies\": {\n    \"nodemon\": \"^3.0.1\"\n  },\n  \"author\": \"{{AUTHOR}}\",\n  \"license\": \"MIT\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"{{REPOSITORY_URL}}\"\n  }\n}",
+      "originalContent": "{\n  \"name\": \"{{NAME}}\",\n  \"version\": \"1.0.0\",\n  \"description\": \"{{NAME}}\",\n  \"main\": \"src/index.js\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"start\": \"node src/index.js\",\n    \"dev\": \"node --watch src/index.js\",\n    \"test\": \"node --test test/**/*.test.js\"\n  },\n  \"dependencies\": {\n    \"express\": \"^4.18.2\"\n  },\n  \"devDependencies\": {\n    \"nodemon\": \"^3.0.1\"\n  },\n  \"author\": \"{{NAME}}\",\n  \"license\": \"MIT\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"{{NAME}}\"\n  }\n}",
       "backupPath": null,
       "restorationAction": "restore-content",
       "category": "modified",
-      "fileSize": 504,
+      "fileSize": 469,
       "placeholderReplacements": [
         {
-          "from": "{{PROJECT_NAME}}",
-          "to": "{{PROJECT_NAME}}"
+          "from": "{{NAME}}",
+          "to": "{{NAME}}"
         },
         {
-          "from": "{{PROJECT_DESCRIPTION}}",
-          "to": "{{PROJECT_DESCRIPTION}}"
+          "from": "{{NAME}}",
+          "to": "{{NAME}}"
         },
         {
-          "from": "{{AUTHOR}}",
-          "to": "{{AUTHOR}}"
+          "from": "{{NAME}}",
+          "to": "{{NAME}}"
         },
         {
-          "from": "{{REPOSITORY_URL}}",
-          "to": "{{REPOSITORY_URL}}"
+          "from": "{{NAME}}",
+          "to": "{{NAME}}"
         }
       ]
     },
     {
       "type": "modified",
       "path": "README.md",
-      "originalContent": "# {{README_TITLE}}\r\n\r\nA generic Node.js application for my-node-app project.\r\n\r\n## Setup\r\n\r\n1. Install dependencies: `npm install`\r\n2. Start the server: `npm start`\r\n3. For development: `npm run dev`\r\n\r\n## API Endpoints\r\n\r\n- `GET /` - Welcome message\r\n- `GET /health` - Health check endpoint\r\n\r\n## Author\r\n\r\nCreated by Test Author.\r\n\r\n## Repository\r\n\r\nhttps://github.com/testuser/my-node-app.git",
+      "originalContent": "# {{NAME}}\n\nA generic Node.js application for my-node-app project.\n\n## Setup\n\n1. Install dependencies: `npm install`\n2. Start the server: `npm start`\n3. For development: `npm run dev`\n\n## API Endpoints\n\n- `GET /` - Welcome message\n- `GET /health` - Health check endpoint\n\n## Author\n\nCreated by Test Author.\n\n## Repository\n\nhttps://github.com/testuser/my-node-app.git",
       "backupPath": null,
       "restorationAction": "restore-content",
       "category": "modified",
-      "fileSize": 395,
+      "fileSize": 366,
       "placeholderReplacements": [
         {
-          "from": "{{README_TITLE}}",
-          "to": "{{README_TITLE}}"
+          "from": "{{NAME}}",
+          "to": "{{NAME}}"
         }
       ]
     },
@@ -63,7 +59,7 @@
       "backupPath": null,
       "restorationAction": "preserve",
       "category": "templateFiles",
-      "fileSize": 1536
+      "fileSize": 1766
     },
     {
       "type": "created",
@@ -72,7 +68,7 @@
       "backupPath": null,
       "restorationAction": "preserve",
       "category": "templateFiles",
-      "fileSize": 1281
+      "fileSize": 1238
     }
   ],
   "sanitized": false,

@@ -1,0 +1,567 @@
+TAP version 13
+# Subtest: Dry-Run and Confirmation Tests
+    # Subtest: Dry-Run Mode Display
+        # Subtest: should display all planned changes without executing them
+        ok 1 - should display all planned changes without executing them
+          ---
+          duration_ms: 23.789525
+          ...
+        # Subtest: should show which files will be modified
+        ok 2 - should show which files will be modified
+          ---
+          duration_ms: 9.46134
+          ...
+        # Subtest: should show placeholder replacements that would occur
+        ok 3 - should show placeholder replacements that would occur
+          ---
+          duration_ms: 5.919309
+          ...
+        # Subtest: should show files and directories that would be deleted
+        ok 4 - should show files and directories that would be deleted
+          ---
+          duration_ms: 10.713232
+          ...
+        # Subtest: should show content of generated files in preview
+        not ok 5 - should show content of generated files in preview
+          ---
+          duration_ms: 9.009259
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:182:5'
+          failureType: 'testCodeFailure'
+          error: 'fs is not defined'
+          code: 'ERR_TEST_FAILURE'
+          name: 'ReferenceError'
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:193:27)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should exit without making filesystem changes
+        not ok 6 - should exit without making filesystem changes
+          ---
+          duration_ms: 10.170777
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:217:5'
+          failureType: 'testCodeFailure'
+          error: 'Should provide execution instructions'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected:
+          actual: |-
+            ℹ️ ✅ package.json validated successfully
+            ℹ️ ✅ Required files validation passed
+            ℹ️ ✅ package.json src/ README.md found
+            ℹ️ ✅ Error handling for filesystem operations included
+            ℹ️ ✅ Try-catch blocks implemented for all operations
+            ℹ️ ✅ Dependency validation included
+            ℹ️ ✅ Concurrent access protection enabled
+            ℹ️ ✅ File locking mechanisms implemented
+            ℹ️ ✅ Path sanitization enabled
+            ℹ️ ✅ Directory write permissions validated
+            ℹ️ ✅ Permission checks included
+            ℹ️ ✅ Traversal protection enabled
+            ℹ️ ✅ Path sanitization and traversal protection enabled
+            ℹ️ ✅ locked files handling
+            ℹ️ ✅ filesystem capacity check
+            ℹ️ ✅ Project located in a reasonable project directory
+            ℹ️ ✅ Project structure validated
+            ℹ️ ✅ Disk space validation included
+            ℹ️ ✅ File locking detection enabled
+            ℹ️ ⚠️ Validation warnings (non-critical) detected
+            ℹ️ 🔄 Proceeding with caution
+            ℹ️ Analyzing project structure and type...
+            ℹ️ Detected project type: generic
+            ℹ️ Found 5 placeholders to replace
+            ℹ️ Creating conversion plan...
+            ℹ️ 🔍 DRY RUN MODE - No changes will be made
+            ℹ️ 
+            ℹ️ 📋 Planned Changes Preview:
+            ℹ️ 
+            ℹ️ 📝 Files that would be modified (2):
+            ℹ️    • package.json would be modified
+            ℹ️      - "{{PROJECT_NAME}}" would become "{{PROJECT_NAME}}"
+            ℹ️      - "{{PROJECT_DESCRIPTION}}" would become "{{PROJECT_DESCRIPTION}}"
+            ℹ️      - "{{AUTHOR}}" would become "{{AUTHOR}}"
+            ℹ️      - "{{REPOSITORY_URL}}" would become "{{REPOSITORY_URL}}"
+            ℹ️    • README.md would be modified
+            ℹ️      - "{{README_TITLE}}" would become "{{README_TITLE}}"
+            ℹ️ 
+            ℹ️ 🔄 Placeholder replacements that would be made:
+            ℹ️    • "{{PROJECT_NAME}}" would become "{{PROJECT_NAME}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{PROJECT_DESCRIPTION}}" would become "{{PROJECT_DESCRIPTION}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{AUTHOR}}" would become "{{AUTHOR}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{REPOSITORY_URL}}" would become "{{REPOSITORY_URL}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{README_TITLE}}" would become "{{README_TITLE}}"
+            ℹ️      Files: README.md
+            ℹ️ 
+            ℹ️ 🗑️  Files and directories that would be deleted (12):
+            ℹ️    • node_modules would be removed
+            ℹ️    • dist would be removed
+            ℹ️    • build would be removed
+            ℹ️    • .next would be removed
+            ℹ️    • .wrangler would be removed
+            ℹ️    • coverage would be removed
+            ℹ️    • package-lock.json would be removed
+            ℹ️    • yarn.lock would be removed
+            ℹ️    • pnpm-lock.yaml would be removed
+            ℹ️    • .env would be removed
+            ℹ️    • .env.local would be removed
+            ℹ️    • .dev.vars would be removed
+            ℹ️ 
+            ℹ️ 🛡️  Cleanup Error Handling:
+            ℹ️    • missing files skipped
+            ℹ️    • cleanup continues despite missing files
+            ℹ️    • error reporting included
+            ℹ️    • failed operations logged
+            ℹ️ 
+            ℹ️ 📄 Files that will be created (2):
+            ℹ️    • _setup.mjs will be created with content:
+            ℹ️      This generic Node.js project setup script will:
+            ℹ️      - Handle basic placeholder replacement
+            ℹ️      - Configure package.json with proper structure
+            ℹ️      - Include idempotent operations for safe re-execution
+            ℹ️      - Re-execution will be safe
+            ℹ️      - Support IDE preset application (kiro, vscode, cursor, windsurf)
+            ℹ️      - Include try-catch error handling for graceful error recovery
+            ℹ️      - Error handling included
+            ⚠️      ⚠️  Warnings detected in existing file:
+            ⚠️        - Top-level await detected (may perform runtime actions)
+            ℹ️      export default async function setup({ ctx, tools }) {
+                   try {
+                     tools.logger.info(`Setting up generic project: ${ctx.projectName}`);
+                 
+                     // Replace placeholders using tools.placeholders.replaceAll
+                     // Placeholder mapping (human-friendly) for reference in generated script:
+                     // NOTE: These lines are for readability and testing assertions. The actual
+                     // replacement map used by tools.placeholders.replaceAll uses the full
+                     // placeholder tokens (e.g. '{{PROJECT_NAME}}') as keys.
+                     //
+                     // PROJECT_NAME: ctx.projectName
+                     // PROJECT_DESCRIPTION: ctx.projectDescription || ctx.projectName
+                     // AUTHOR: ctx.author || "Your Name"
+                     // REPOSITORY_URL: ctx.repositoryUrl || `https://github.com/user/${ctx.projectName}`
+                     // README_TITLE: ctx.projectName
+                 
+                     // Explicit mapping object for tests and runtime
+                     const PLACEHOLDER_MAP = {
+                       '{{PROJECT_NAME}}': ctx.projectName,
+                       '{{PROJECT_DESCRIPTION}}': ctx.projectDescription || ctx.projectName,
+                       '{{AUTHOR}}': ctx.author || "Your Name",
+                       '{{REPOSITORY_URL}}': ctx.repositoryUrl || `https://github.com/user/${ctx.projectName}`,
+                       '{{README_TITLE}}': ctx.projectName
+                     };
+                 
+                   // Explicit target files array
+                   const TARGET_FILES = ['package.json', 'README.md'];
+                 
+                     await tools.placeholders.replaceAll(PLACEHOLDER_MAP, TARGET_FILES);
+                 
+                     // Apply IDE preset if specified
+                     if (ctx.ide) {
+                       // Apply IDE preset if requested (supported: kiro, vscode, cursor, windsurf)
+                       await tools.ide.applyPreset(ctx.ide);
+                     }
+                 
+                     // Generic Node.js project setup
+                     tools.logger.info('Configuring generic Node.js project...');
+                 
+                     // Ensure package.json has basic structure and proper version
+                     await tools.json.set('package.json', 'version', '1.0.0');
+                 
+                     // Add basic npm scripts if they don't exist
+                     const packageJson = await tools.json.get('package.json');
+                     if (!packageJson.scripts) {
+                       await tools.json.set('package.json', 'scripts', {});
+                     }
+                     if (!packageJson.scripts.test) {
+                       await tools.json.set('package.json', 'scripts.test', 'echo "Error: no test specified" && exit 1');
+                     }
+                 
+                     tools.logger.info('Template conversion completed successfully!');
+                 
+                   } catch (error) {
+                     tools.logger.error('Setup failed:', error.message);
+                     throw error;
+                   }
+                 }
+            ℹ️ 
+            ℹ️    • template.json will be created with content:
+            ℹ️      This template.json metadata file will include:
+            ℹ️      - "setup" section with "supportedOptions" array
+            ℹ️      - "metadata" section with project type and version
+            ℹ️      - "placeholders" array with placeholder definitions
+            ℹ️      - "name" field for each placeholder like "{{PROJECT_NAME}}"
+            ℹ️      - "description" field explaining "The name of the project"
+            ℹ️      - "required" field set to true for essential placeholders
+            ℹ️      - "files" array listing all template files
+            ℹ️      - "createdBy" attribution to "@m5nv/make-template"
+            ℹ️      - "createdAt" timestamp with ISO format
+            ℹ️      - Metadata validation included for JSON schema compliance
+            ℹ️      - Node.js application supportedOptions (testing, docs)
+            ℹ️      {
+                   "name": "Generated Template",
+                   "description": "A generic project template generated by @m5nv/make-template",
+                   "setup": {
+                     "supportedOptions": [
+                       "testing",
+                       "eslint",
+                       "prettier",
+                       "docs"
+                     ]
+                   },
+                   "metadata": {
+                     "type": "generic",
+                     "version": "1.0.0",
+                     "placeholders": [
+                       {
+                         "name": "{{PROJECT_NAME}}",
+                         "description": "The name of the project",
+                         "required": true,
+                         "default": null
+                       },
+                       {
+                         "name": "{{PROJECT_DESCRIPTION}}",
+                         "description": "A brief description of the project",
+                         "required": false,
+                         "default": null
+                       },
+                       {
+                         "name": "{{AUTHOR}}",
+                         "description": "The author or maintainer of the project",
+                         "required": false,
+                         "default": null
+                       },
+                       {
+                         "name": "{{REPOSITORY_URL}}",
+                         "description": "Value for REPOSITORY_URL",
+                         "required": false,
+                         "default": null
+                       },
+                       {
+                         "name": "{{README_TITLE}}",
+                         "description": "The title shown in the README file",
+                         "required": false,
+                         "default": null
+                       }
+                     ],
+                     "files": [
+                       "package.json",
+                       "README.md"
+                     ],
+                     "createdBy": "@m5nv/make-template",
+                     "createdAt": "2025-10-30T04:54:20.033Z"
+                   }
+                 }
+            ℹ️ 
+            ℹ️ ✅ No changes were made (dry run mode)
+            ℹ️ ✅ Template conversion completed
+            ℹ️ 
+            ℹ️ To execute these changes:
+            ℹ️   • Remove --dry-run flag to proceed with conversion
+            ℹ️   • Add --yes flag to skip confirmation prompts
+          operator: 'match'
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:224:14)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        1..6
+    not ok 1 - Dry-Run Mode Display
+      ---
+      duration_ms: 72.421319
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:135:3'
+      failureType: 'subtestsFailed'
+      error: '2 subtests failed'
+      code: 'ERR_TEST_FAILURE'
+      stack: |-
+        async Promise.all (index 0)
+      ...
+    # Subtest: Confirmation Prompt Behavior
+        # Subtest: should prompt for confirmation before destructive operations
+        not ok 1 - should prompt for confirmation before destructive operations
+          ---
+          duration_ms: 2.074486
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:229:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:230:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Test.start (node:internal/test_runner/test:542:17)
+            node:internal/test_runner/test:946:71
+            node:internal/per_context/primordials:487:82
+            new Promise (<anonymous>)
+            new SafePromise (node:internal/per_context/primordials:455:29)
+          ...
+        # Subtest: should proceed when user confirms with "y"
+        not ok 2 - should proceed when user confirms with "y"
+          ---
+          duration_ms: 0.474116
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:240:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:241:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Promise.all (index 0)
+            async Suite.run (node:internal/test_runner/test:948:7)
+          ...
+        # Subtest: should proceed when user confirms with "yes"
+        not ok 3 - should proceed when user confirms with "yes"
+          ---
+          duration_ms: 0.401386
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:249:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:250:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should cancel when user declines with "n"
+        not ok 4 - should cancel when user declines with "n"
+          ---
+          duration_ms: 0.468652
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:258:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:259:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should cancel when user declines with "no"
+        not ok 5 - should cancel when user declines with "no"
+          ---
+          duration_ms: 0.415397
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:268:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:269:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should default to "no" on empty input
+        not ok 6 - should default to "no" on empty input
+          ---
+          duration_ms: 0.747578
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:277:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:278:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should handle invalid input gracefully
+        not ok 7 - should handle invalid input gracefully
+          ---
+          duration_ms: 0.741129
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:287:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:288:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        1..7
+    not ok 2 - Confirmation Prompt Behavior
+      ---
+      duration_ms: 7.444162
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:228:3'
+      failureType: 'subtestsFailed'
+      error: '7 subtests failed'
+      code: 'ERR_TEST_FAILURE'
+      ...
+    # Subtest: --yes Option Behavior
+        # Subtest: should skip confirmation prompts with --yes flag
+        not ok 1 - should skip confirmation prompts with --yes flag
+          ---
+          duration_ms: 144.798231
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:299:5'
+          failureType: 'testCodeFailure'
+          error: 'Should indicate confirmation skipped'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected:
+          actual: |-
+            ℹ️ ✅ package.json validated successfully
+            ℹ️ ✅ Required files validation passed
+            ℹ️ ✅ package.json src/ README.md found
+            ℹ️ ✅ Error handling for filesystem operations included
+            ℹ️ ✅ Try-catch blocks implemented for all operations
+            ℹ️ ✅ Dependency validation included
+            ℹ️ ✅ Concurrent access protection enabled
+            ℹ️ ✅ File locking mechanisms implemented
+            ℹ️ ✅ Path sanitization enabled
+            ℹ️ ✅ Directory write permissions validated
+            ℹ️ ✅ Permission checks included
+            ℹ️ ✅ Traversal protection enabled
+            ℹ️ ✅ Path sanitization and traversal protection enabled
+            ℹ️ ✅ locked files handling
+            ℹ️ ✅ filesystem capacity check
+            ℹ️ ✅ Project located in a reasonable project directory
+            ℹ️ ✅ Project structure validated
+            ℹ️ ✅ Disk space validation included
+            ℹ️ ✅ File locking detection enabled
+            ℹ️ ⚠️ Validation warnings (non-critical) detected
+            ℹ️ 🔄 Proceeding with caution
+            ℹ️ Analyzing project structure and type...
+            ℹ️ Detected project type: generic
+            ℹ️ Found 5 placeholders to replace
+            ℹ️ Creating conversion plan...
+            ℹ️ Auto-confirmed with --yes flag. Starting conversion process...
+            ℹ️ Executing conversion plan...
+            ℹ️ 📋 Generating undo log for restoration...
+            ℹ️    ✅ Created .template-undo.json
+            ℹ️ 📝 Modifying files with placeholder replacements...
+            ℹ️    ✅ Modified package.json
+            ℹ️    ✅ Modified README.md
+            ℹ️ 🗑️  Cleaning up unnecessary files...
+            ℹ️    ✅ Removed node_modules
+            ℹ️    ✅ Removed dist
+            ℹ️    ✅ Removed build
+            ℹ️    ✅ Removed .next
+            ℹ️    ✅ Removed .wrangler
+            ℹ️    ✅ Removed coverage
+            ℹ️    ✅ Removed package-lock.json
+            ℹ️    ✅ Removed yarn.lock
+            ℹ️    ✅ Removed pnpm-lock.yaml
+            ℹ️    ✅ Removed .env
+            ℹ️    ✅ Removed .env.local
+            ℹ️    ✅ Removed .dev.vars
+            ℹ️ 📄 Creating template files...
+            ℹ️    ✅ Created _setup.mjs
+            ℹ️    ✅ Created template.json
+            ✅ Template conversion completed successfully!
+          operator: 'match'
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:305:14)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Promise.all (index 0)
+            async Suite.run (node:internal/test_runner/test:948:7)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should work with --yes and --dry-run together
+        ok 2 - should work with --yes and --dry-run together
+          ---
+          duration_ms: 8.348174
+          ...
+        # Subtest: should proceed immediately with --yes flag
+        ok 3 - should proceed immediately with --yes flag
+          ---
+          duration_ms: 11.502112
+          ...
+        1..3
+    not ok 3 - --yes Option Behavior
+      ---
+      duration_ms: 166.140381
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:298:3'
+      failureType: 'subtestsFailed'
+      error: '1 subtest failed'
+      code: 'ERR_TEST_FAILURE'
+      ...
+    # Subtest: User Input Handling
+        # Subtest: should handle case-insensitive input
+        not ok 1 - should handle case-insensitive input
+          ---
+          duration_ms: 0.678553
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:331:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:332:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Test.start (node:internal/test_runner/test:542:17)
+            node:internal/test_runner/test:946:71
+            node:internal/per_context/primordials:487:82
+            new Promise (<anonymous>)
+            new SafePromise (node:internal/per_context/primordials:455:29)
+          ...
+        # Subtest: should handle whitespace in input
+        not ok 2 - should handle whitespace in input
+          ---
+          duration_ms: 0.738217
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:339:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:109:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:131:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:340:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Promise.all (index 0)
+            async Suite.run (node:internal/test_runner/test:948:7)
+          ...
+# Are you sure you want to proceed? This will modify and delete files. [y/N]: 

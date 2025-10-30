@@ -11,7 +11,7 @@ const projectRoot = path.resolve(__dirname, '../..');
 
 /**
  * Integration Testing and Validation
- * 
+ *
  * This test suite validates:
  * - Complete test suite execution
  * - Real-world project examples and edge cases
@@ -21,14 +21,14 @@ const projectRoot = path.resolve(__dirname, '../..');
  */
 
 describe('Integration Testing and Validation', () => {
-  
+
   test('should run complete test suite successfully', async () => {
     const result = await runCommand('node', ['--test', 'test/**/*.test.js'], { cwd: projectRoot });
-    
+
     // The test suite should complete (even if some tests fail)
     // We're validating that the test infrastructure works
     assert.ok(result.stdout || result.stderr, 'Test suite should produce output');
-    
+
     // Check that all test categories are being executed
     const output = result.stdout + result.stderr;
     assert.match(output, /test|✔|✖/, 'Should execute test files');
@@ -40,10 +40,10 @@ describe('Integration Testing and Validation', () => {
       path.join(projectRoot, 'src/bin/cli.js'),
       '--dry-run'
     ], { cwd: projectRoot });
-    
+
     // Should complete successfully in dry-run mode
     assert.strictEqual(result.exitCode, 0, 'CLI should execute successfully in dry-run mode');
-    
+
     // Should detect project type
     const output = result.stdout + result.stderr;
     assert.match(output, /Detected project type/, 'Should detect project type');
@@ -59,7 +59,7 @@ describe('Integration Testing and Validation', () => {
         expectedFiles: ['wrangler.jsonc']
       },
       {
-        name: 'vite-react-project', 
+        name: 'vite-react-project',
         expectedType: 'vite-react',
         expectedFiles: ['vite.config.js', 'index.html']
       },
@@ -72,7 +72,7 @@ describe('Integration Testing and Validation', () => {
 
     for (const testCase of testCases) {
       const projectPath = path.join(projectRoot, 'test/fixtures/input-projects', testCase.name);
-      
+
       // Check if test fixture exists
       try {
         await fs.access(projectPath);
@@ -88,13 +88,13 @@ describe('Integration Testing and Validation', () => {
 
       // Should detect correct project type
       const output = result.stdout + result.stderr;
-      assert.match(output, new RegExp(`project type: ${testCase.expectedType}`, 'i'), 
+      assert.match(output, new RegExp(`project type: ${testCase.expectedType}`, 'i'),
         `Should detect ${testCase.expectedType} project type`);
-      
+
       // Should handle project-specific files
       for (const file of testCase.expectedFiles) {
         if (testCase.expectedType !== 'generic') {
-          assert.match(output, new RegExp(file.replace('.', '\\.')), 
+          assert.match(output, new RegExp(file.replace('.', '\\.')),
             `Should reference ${file} for ${testCase.expectedType} projects`);
         }
       }
@@ -104,12 +104,12 @@ describe('Integration Testing and Validation', () => {
   test('should validate generated template structure', async () => {
     // Create a temporary test directory
     const tempDir = path.join(projectRoot, 'temp-integration-test');
-    
+
     try {
       // Copy current project to temp directory for testing
       await fs.mkdir(tempDir, { recursive: true });
       await copyDirectory(projectRoot, tempDir, ['node_modules', '.git', 'temp-integration-test']);
-      
+
       // Run conversion (not dry-run)
       const result = await runCommand('node', [
         path.join(projectRoot, 'src/bin/cli.js'),
@@ -120,7 +120,7 @@ describe('Integration Testing and Validation', () => {
         // Validate generated files exist
         const setupExists = await fileExists(path.join(tempDir, '_setup.mjs'));
         const templateExists = await fileExists(path.join(tempDir, 'template.json'));
-        
+
         assert.ok(setupExists, '_setup.mjs should be generated');
         assert.ok(templateExists, 'template.json should be generated');
 
@@ -136,7 +136,7 @@ describe('Integration Testing and Validation', () => {
         if (templateExists) {
           const templateContent = await fs.readFile(path.join(tempDir, 'template.json'), 'utf8');
           const template = JSON.parse(templateContent);
-          
+
           assert.ok(template.setup, 'Template should have setup section');
           assert.ok(template.metadata, 'Template should have metadata section');
           assert.ok(Array.isArray(template.metadata.placeholders), 'Should have placeholders array');
@@ -156,10 +156,10 @@ describe('Integration Testing and Validation', () => {
   test('should validate error handling and edge cases', async () => {
     // Test with invalid directory (no package.json)
     const tempDir = path.join(projectRoot, 'temp-invalid-test');
-    
+
     try {
       await fs.mkdir(tempDir, { recursive: true });
-      
+
       const result = await runCommand('node', [
         path.join(projectRoot, 'src/bin/cli.js'),
         '--dry-run'
@@ -167,7 +167,7 @@ describe('Integration Testing and Validation', () => {
 
       // Should fail gracefully with appropriate error
       assert.strictEqual(result.exitCode, 1, 'Should exit with error code 1 for invalid project');
-      
+
       const output = result.stdout + result.stderr;
       assert.match(output, /package\.json.*not found/i, 'Should indicate missing package.json');
     } finally {
@@ -205,14 +205,14 @@ describe('Integration Testing and Validation', () => {
       ], { cwd: projectRoot });
 
       const output = result.stdout + result.stderr;
-      
+
       if (testCase.expectedPattern) {
-        assert.match(output, testCase.expectedPattern, 
+        assert.match(output, testCase.expectedPattern,
           `Should match pattern for args: ${testCase.args.join(' ')}`);
       }
-      
+
       if (testCase.expectedExit !== undefined) {
-        assert.strictEqual(result.exitCode, testCase.expectedExit, 
+        assert.strictEqual(result.exitCode, testCase.expectedExit,
           `Should exit with code ${testCase.expectedExit} for args: ${testCase.args.join(' ')}`);
       }
     }
@@ -227,12 +227,12 @@ describe('Integration Testing and Validation', () => {
 
     // Should work regardless of platform
     assert.strictEqual(result.exitCode, 0, 'Should work on current platform');
-    
+
     const output = result.stdout + result.stderr;
-    
+
     // Should handle path separators correctly
     assert.match(output, /package\.json/, 'Should reference files correctly');
-    
+
     // Should not contain platform-specific path issues (allow single separators)
     assert.doesNotMatch(output, /\\{3,}|\/{3,}/, 'Should not have triple+ path separators');
   });
@@ -245,37 +245,37 @@ describe('Integration Testing and Validation', () => {
     ], { cwd: projectRoot });
 
     const output = result.stdout + result.stderr;
-    
+
     // Requirement 1: Project analysis and conversion
     assert.match(output, /Analyzing project structure/i, 'Should analyze project structure');
     assert.match(output, /Detected project type/i, 'Should detect project type');
-    
+
     // Requirement 2: Preview changes (dry-run)
     assert.match(output, /DRY RUN MODE/i, 'Should support dry-run mode');
     assert.match(output, /Planned Changes Preview/i, 'Should show planned changes');
-    
+
     // Requirement 3: Placeholder handling
     assert.match(output, /placeholder/i, 'Should handle placeholders');
-    
+
     // Requirement 4: Safety validation
     assert.match(output, /validation/i, 'Should perform validation');
-    
+
     // Requirement 5: Project type detection
     assert.match(output, /project type/i, 'Should detect project types');
-    
+
     // Requirement 6: Placeholder identification
     assert.match(output, /PROJECT_NAME|placeholder/i, 'Should identify placeholders');
-    
+
     // Requirement 7: Cleanup operations (may not show for clean projects)
     // Note: Cleanup only shows when there are files to clean up
     assert.ok(true, 'Cleanup operations validated (conditional on project state)');
-    
+
     // Requirement 8: Setup script generation
     assert.match(output, /_setup\.mjs/i, 'Should generate setup script');
-    
+
     // Requirement 9: Error handling
     assert.strictEqual(result.exitCode, 0, 'Should handle execution without errors');
-    
+
     // Requirement 10: Node.js CLI best practices
     assert.match(output, /ℹ️|✅/, 'Should use appropriate CLI formatting');
   });
@@ -285,7 +285,10 @@ describe('Integration Testing and Validation', () => {
 
 async function runCommand(command, args = [], options = {}) {
   return new Promise((resolve) => {
-    const child = spawn(command, args, {
+    const runArgs = Array.isArray(args) ? [...args] : [];
+    if (options.silent !== false && !runArgs.includes('--silent')) runArgs.push('--silent');
+
+    const child = spawn(command, runArgs, {
       stdio: 'pipe',
       ...options
     });
@@ -330,13 +333,13 @@ async function fileExists(filePath) {
 
 async function copyDirectory(src, dest, exclude = []) {
   const entries = await fs.readdir(src, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     if (exclude.includes(entry.name)) continue;
-    
+
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
-    
+
     if (entry.isDirectory()) {
       await fs.mkdir(destPath, { recursive: true });
       await copyDirectory(srcPath, destPath, exclude);

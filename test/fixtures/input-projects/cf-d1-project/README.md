@@ -1,4 +1,4 @@
-# My D1 Worker
+# {{README_TITLE}}
 
 A Cloudflare Worker with D1 database integration for my-d1-worker project.
 

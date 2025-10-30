@@ -1,6 +1,6 @@
 /**
  * File Categorization Utilities
- * 
+ *
  * Categorizes files for template restoration operations.
  * Implements requirements 2.1 and 2.2 for file categorization system.
  */
@@ -16,7 +16,7 @@ export class FileCategorizer {
       generated: {
         files: [
           'package-lock.json',
-          'yarn.lock', 
+          'yarn.lock',
           'pnpm-lock.yaml',
           'bun.lockb',
           'composer.lock',
@@ -137,7 +137,7 @@ export class FileCategorizer {
       // Check each category
       for (const [categoryName, categoryConfig] of Object.entries(this.categories)) {
         const matchResult = this.matchesCategory(filePath, fileName, isDirectory, categoryConfig);
-        
+
         if (matchResult.matches) {
           const shouldStoreContent = this.shouldStoreContent(
             categoryConfig,
@@ -154,8 +154,8 @@ export class FileCategorizer {
             fileSize,
             storeContent: shouldStoreContent,
             action: categoryConfig.action || this.getDefaultAction(categoryName),
-            regenerationCommand: categoryConfig.regenerationCommands[fileName] || 
-                               categoryConfig.regenerationCommands[filePath] || null,
+            regenerationCommand: categoryConfig.regenerationCommands[fileName] ||
+              categoryConfig.regenerationCommands[filePath] || null,
             matchedPattern: matchResult.pattern,
             warnings: this.getWarnings(fileSize, shouldStoreContent)
           };
@@ -198,13 +198,13 @@ export class FileCategorizer {
    */
   matchesCategory(filePath, fileName, isDirectory, categoryConfig) {
     const targetList = isDirectory ? categoryConfig.directories : categoryConfig.files;
-    
+
     for (const pattern of targetList) {
       if (this.matchesPattern(filePath, fileName, pattern)) {
         return { matches: true, pattern };
       }
     }
-    
+
     return { matches: false, pattern: null };
   }
 
@@ -257,6 +257,15 @@ export class FileCategorizer {
       return false;
     }
 
+    // Allow explicit overrides via options first
+    if (options.forceStoreContent) {
+      return true;
+    }
+
+    if (options.neverStoreContent) {
+      return false;
+    }
+
     // Check category default
     if (!categoryConfig.storeContent) {
       return false;
@@ -264,15 +273,6 @@ export class FileCategorizer {
 
     // Check size threshold
     if (fileSize > this.sizeThresholds.maxContentStorage) {
-      return false;
-    }
-
-    // Allow override via options
-    if (options.forceStoreContent) {
-      return true;
-    }
-
-    if (options.neverStoreContent) {
       return false;
     }
 
@@ -436,7 +436,7 @@ export class FileCategorizer {
     // Check for duplicate patterns across categories
     for (const [categoryName, categoryConfig] of Object.entries(this.categories)) {
       const allPatterns = [...categoryConfig.files, ...categoryConfig.directories];
-      
+
       for (const pattern of allPatterns) {
         if (duplicates.has(pattern)) {
           issues.push(`Duplicate pattern '${pattern}' found in category '${categoryName}'`);

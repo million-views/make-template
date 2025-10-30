@@ -1,6 +1,6 @@
 /**
  * Placeholder Identification System
- * 
+ *
  * Identifies project-specific values that should become placeholders.
  */
 
@@ -29,15 +29,15 @@ export class PlaceholderFinder {
 
   async findPlaceholders(projectType, placeholderFormat = '{{PLACEHOLDER_NAME}}') {
     const placeholders = [];
-    
+
     // Process common placeholders
     await this.processCommonPlaceholders(placeholders, placeholderFormat);
-    
+
     // Process project-specific placeholders
     if (this.placeholderMappings[projectType]) {
       await this.processProjectSpecificPlaceholders(placeholders, projectType, placeholderFormat);
     }
-    
+
     return placeholders;
   }
 
@@ -46,7 +46,7 @@ export class PlaceholderFinder {
     if (await FSUtils.exists('package.json')) {
       const packageContent = await readFile('package.json', 'utf8');
       const packageJson = JSON.parse(packageContent);
-      
+
       if (packageJson.name) {
         placeholders.push({
           name: 'PROJECT_NAME',
@@ -55,7 +55,7 @@ export class PlaceholderFinder {
           files: ['package.json']
         });
       }
-      
+
       if (packageJson.description) {
         placeholders.push({
           name: 'PROJECT_DESCRIPTION',
@@ -64,12 +64,12 @@ export class PlaceholderFinder {
           files: ['package.json']
         });
       }
-      
+
       if (packageJson.author) {
-        const authorValue = typeof packageJson.author === 'string' 
-          ? packageJson.author 
+        const authorValue = typeof packageJson.author === 'string'
+          ? packageJson.author
           : packageJson.author.name || JSON.stringify(packageJson.author);
-        
+
         placeholders.push({
           name: 'AUTHOR',
           value: authorValue,
@@ -77,7 +77,7 @@ export class PlaceholderFinder {
           files: ['package.json']
         });
       }
-      
+
       if (packageJson.repository && packageJson.repository.url) {
         placeholders.push({
           name: 'REPOSITORY_URL',
@@ -87,12 +87,12 @@ export class PlaceholderFinder {
         });
       }
     }
-    
+
     // Process README.md
     if (await FSUtils.exists('README.md')) {
       const readmeContent = await readFile('README.md', 'utf8');
       const lines = readmeContent.split('\n');
-      
+
       // Find title (first # heading)
       const titleLine = lines.find(line => line.startsWith('# '));
       if (titleLine) {
@@ -118,10 +118,13 @@ export class PlaceholderFinder {
   async processCloudflareWorkerPlaceholders(placeholders, projectType, format) {
     if (await FSUtils.exists('wrangler.jsonc')) {
       const wranglerContent = await readFile('wrangler.jsonc', 'utf8');
-      // Remove comments for JSON parsing
-      const cleanContent = wranglerContent.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
+      // Strip only block comments (/* ... */). Do NOT remove '//' sequences
+      // as they may appear inside string values (e.g. protocol URLs).
+      const cleanContent = wranglerContent.replace(/\/\*[\s\S]*?\*\//g, '');
+      // Remove only block comments (/* */) to avoid stripping '//' sequences
+      // that may occur inside string literals such as URLs (e.g. libsql://...)
       const wranglerConfig = JSON.parse(cleanContent);
-      
+
       if (wranglerConfig.name) {
         placeholders.push({
           name: 'WORKER_NAME',
@@ -130,7 +133,7 @@ export class PlaceholderFinder {
           files: ['wrangler.jsonc']
         });
       }
-      
+
       if (wranglerConfig.account_id) {
         placeholders.push({
           name: 'CLOUDFLARE_ACCOUNT_ID',
@@ -139,7 +142,7 @@ export class PlaceholderFinder {
           files: ['wrangler.jsonc']
         });
       }
-      
+
       if (projectType === 'cf-d1' && wranglerConfig.d1_databases) {
         wranglerConfig.d1_databases.forEach((db, index) => {
           if (db.binding) {
@@ -149,6 +152,16 @@ export class PlaceholderFinder {
               placeholder: this.formatPlaceholder(`D1_BINDING_${index}`, format),
               files: ['wrangler.jsonc']
             });
+            // Also provide a non-indexed alias for the first binding to match
+            // legacy/test expectations (D1_DATABASE_BINDING)
+            if (index === 0) {
+              placeholders.push({
+                name: 'D1_DATABASE_BINDING',
+                value: db.binding,
+                placeholder: this.formatPlaceholder('D1_DATABASE_BINDING', format),
+                files: ['wrangler.jsonc']
+              });
+            }
           }
           if (db.database_id) {
             placeholders.push({
@@ -157,10 +170,19 @@ export class PlaceholderFinder {
               placeholder: this.formatPlaceholder(`D1_DATABASE_ID_${index}`, format),
               files: ['wrangler.jsonc']
             });
+            // Non-indexed alias for first database id
+            if (index === 0) {
+              placeholders.push({
+                name: 'D1_DATABASE_ID',
+                value: db.database_id,
+                placeholder: this.formatPlaceholder('D1_DATABASE_ID', format),
+                files: ['wrangler.jsonc']
+              });
+            }
           }
         });
       }
-      
+
       if (projectType === 'cf-turso' && wranglerConfig.vars) {
         if (wranglerConfig.vars.TURSO_DB_URL) {
           placeholders.push({
@@ -170,7 +192,7 @@ export class PlaceholderFinder {
             files: ['wrangler.jsonc']
           });
         }
-        
+
         if (wranglerConfig.vars.TURSO_DB_AUTH_TOKEN) {
           placeholders.push({
             name: 'TURSO_DB_AUTH_TOKEN',
@@ -188,7 +210,7 @@ export class PlaceholderFinder {
     const viteConfigPath = await FSUtils.exists('vite.config.js') ? 'vite.config.js' : 'vite.config.ts';
     if (await FSUtils.exists(viteConfigPath)) {
       const viteContent = await readFile(viteConfigPath, 'utf8');
-      
+
       // Simple regex to find base URL (this is basic, could be enhanced)
       const baseMatch = viteContent.match(/base:\s*['"`]([^'"`]+)['"`]/);
       if (baseMatch) {
@@ -200,11 +222,11 @@ export class PlaceholderFinder {
         });
       }
     }
-    
+
     // Process index.html
     if (await FSUtils.exists('index.html')) {
       const htmlContent = await readFile('index.html', 'utf8');
-      
+
       // Find title tag
       const titleMatch = htmlContent.match(/<title>([^<]+)<\/title>/i);
       if (titleMatch) {
@@ -219,14 +241,17 @@ export class PlaceholderFinder {
   }
 
   formatPlaceholder(name, format) {
+    // Support format strings that use either PLACEHOLDER_NAME or NAME as the
+    // substitution marker. Replace both occurrences so callers can pass
+    // formats like '{{NAME}}' or '{{PLACEHOLDER_NAME}}'.
     if (format.includes('{{') && format.includes('}}')) {
-      return format.replace('PLACEHOLDER_NAME', name);
+      return format.replace(/PLACEHOLDER_NAME|NAME/g, name);
     } else if (format.includes('__') && format.endsWith('__')) {
-      return format.replace('PLACEHOLDER_NAME', name);
+      return format.replace(/PLACEHOLDER_NAME|NAME/g, name);
     } else if (format.includes('%')) {
-      return format.replace('PLACEHOLDER_NAME', name);
+      return format.replace(/PLACEHOLDER_NAME|NAME/g, name);
     }
-    
+
     // Default to double-brace format
     return `{{${name}}}`;
   }

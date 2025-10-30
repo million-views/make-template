@@ -1,0 +1,101 @@
+TAP version 13
+# Subtest: Template Generation Tests
+    # Subtest: _setup.mjs Generation
+        # Subtest: should generate _setup.mjs with correct Environment object destructuring
+        ok 1 - should generate _setup.mjs with correct Environment object destructuring
+          ---
+          duration_ms: 23.016908
+          ...
+        # Subtest: should generate _setup.mjs with tools.placeholders.replaceAll usage
+        ok 2 - should generate _setup.mjs with tools.placeholders.replaceAll usage
+          ---
+          duration_ms: 7.903472
+          ...
+        # Subtest: should generate _setup.mjs with proper placeholder mapping
+        ok 3 - should generate _setup.mjs with proper placeholder mapping
+          ---
+          duration_ms: 7.354546
+          ...
+        # Subtest: should generate _setup.mjs with logging statements
+        ok 4 - should generate _setup.mjs with logging statements
+          ---
+          duration_ms: 5.868615
+          ...
+        # Subtest: should generate project-type-specific setup script for cf-d1
+        ok 5 - should generate project-type-specific setup script for cf-d1
+          ---
+          duration_ms: 12.405186
+          ...
+        # Subtest: should generate project-type-specific setup script for vite-react
+        ok 6 - should generate project-type-specific setup script for vite-react
+          ---
+          duration_ms: 5.746722
+          ...
+        # Subtest: should generate idempotent setup script operations
+        ok 7 - should generate idempotent setup script operations
+          ---
+          duration_ms: 5.928745
+          ...
+        1..7
+    ok 1 - _setup.mjs Generation
+      ---
+      duration_ms: 71.287294
+      type: 'suite'
+      ...
+    # Subtest: template.json Generation
+        # Subtest: should generate template.json with supportedOptions structure
+        ok 1 - should generate template.json with supportedOptions structure
+          ---
+          duration_ms: 4.822666
+          ...
+        # Subtest: should generate template.json with placeholder definitions
+        ok 2 - should generate template.json with placeholder definitions
+          ---
+          duration_ms: 4.511921
+          ...
+        # Subtest: should generate template.json with project type information
+        ok 3 - should generate template.json with project type information
+          ---
+          duration_ms: 8.485794
+          ...
+        # Subtest: should generate template.json with creation timestamp and attribution
+        ok 4 - should generate template.json with creation timestamp and attribution
+          ---
+          duration_ms: 4.191665
+          ...
+        # Subtest: should generate template.json with file list
+        ok 5 - should generate template.json with file list
+          ---
+          duration_ms: 4.633674
+          ...
+        1..5
+    ok 2 - template.json Generation
+      ---
+      duration_ms: 28.040899
+      type: 'suite'
+      ...
+    # Subtest: Project-Type-Specific Template Generation
+        # Subtest: should generate cf-d1 specific template files
+        ok 1 - should generate cf-d1 specific template files
+          ---
+          duration_ms: 5.546915
+          ...
+# Subtest: /home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js
+not ok 1 - /home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js
+  ---
+  duration_ms: 199.903453
+  location: '/home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 14
+# suites 2
+# pass 13
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 208.61188

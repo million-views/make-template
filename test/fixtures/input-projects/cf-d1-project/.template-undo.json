@@ -1,0 +1,116 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.0.0",
+    "projectType": "cf-d1",
+    "timestamp": "2025-10-30T05:55:35.389Z",
+    "placeholderFormat": "{{PLACEHOLDER_NAME}}"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "{{PROJECT_NAME}}",
+    "{{PROJECT_DESCRIPTION}}": "{{PROJECT_DESCRIPTION}}",
+    "{{AUTHOR}}": "{{AUTHOR}}",
+    "{{README_TITLE}}": "{{README_TITLE}}",
+    "{{WORKER_NAME}}": "{{WORKER_NAME}}",
+    "{{CLOUDFLARE_ACCOUNT_ID}}": "{{CLOUDFLARE_ACCOUNT_ID}}",
+    "{{D1_BINDING_0}}": "{{D1_BINDING_0}}",
+    "{{D1_DATABASE_BINDING}}": "{{D1_BINDING_0}}",
+    "{{D1_DATABASE_ID_0}}": "{{D1_DATABASE_ID_0}}",
+    "{{D1_DATABASE_ID}}": "{{D1_DATABASE_ID_0}}"
+  },
+  "fileOperations": [
+    {
+      "type": "modified",
+      "path": "package.json",
+      "originalContent": "{\n  \"name\": \"{{PROJECT_NAME}}\",\n  \"version\": \"1.0.0\",\n  \"description\": \"{{PROJECT_DESCRIPTION}}\",\n  \"main\": \"src/index.js\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"wrangler dev\",\n    \"deploy\": \"wrangler deploy\",\n    \"test\": \"vitest\"\n  },\n  \"dependencies\": {\n    \"@cloudflare/workers-types\": \"^4.20231025.0\"\n  },\n  \"devDependencies\": {\n    \"wrangler\": \"^3.15.0\",\n    \"vitest\": \"^0.34.6\"\n  },\n  \"author\": \"{{AUTHOR}}\",\n  \"license\": \"MIT\"\n}",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 444,
+      "placeholderReplacements": [
+        {
+          "from": "{{PROJECT_NAME}}",
+          "to": "{{PROJECT_NAME}}"
+        },
+        {
+          "from": "{{PROJECT_DESCRIPTION}}",
+          "to": "{{PROJECT_DESCRIPTION}}"
+        },
+        {
+          "from": "{{AUTHOR}}",
+          "to": "{{AUTHOR}}"
+        }
+      ]
+    },
+    {
+      "type": "modified",
+      "path": "README.md",
+      "originalContent": "# {{README_TITLE}}\n\nA Cloudflare Worker with D1 database integration for my-d1-worker project.\n\n## Setup\n\n1. Install dependencies: `npm install`\n2. Run development server: `npm run dev`\n3. Deploy to Cloudflare: `npm run deploy`\n\n## Database\n\nThis worker uses Cloudflare D1 database with the following binding:\n- Database: my-d1-database\n- Binding: DB\n\n## Author\n\nCreated by Test Author.",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 386,
+      "placeholderReplacements": [
+        {
+          "from": "{{README_TITLE}}",
+          "to": "{{README_TITLE}}"
+        }
+      ]
+    },
+    {
+      "type": "modified",
+      "path": "wrangler.jsonc",
+      "originalContent": "{\n  \"name\": \"{{WORKER_NAME}}\",\n  \"main\": \"src/index.js\",\n  \"compatibility_date\": \"2023-10-25\",\n  \"account_id\": \"{{CLOUDFLARE_ACCOUNT_ID}}\",\n  \"d1_databases\": [\n    {\n      \"binding\": \"{{D1_BINDING_0}}\",\n      \"database_name\": \"my-d1-database\",\n      \"database_id\": \"{{D1_DATABASE_ID_0}}\"\n    }\n  ],\n  \"vars\": {\n    \"ENVIRONMENT\": \"development\"\n  }\n}",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 349,
+      "placeholderReplacements": [
+        {
+          "from": "{{WORKER_NAME}}",
+          "to": "{{WORKER_NAME}}"
+        },
+        {
+          "from": "{{CLOUDFLARE_ACCOUNT_ID}}",
+          "to": "{{CLOUDFLARE_ACCOUNT_ID}}"
+        },
+        {
+          "from": "{{D1_BINDING_0}}",
+          "to": "{{D1_BINDING_0}}"
+        },
+        {
+          "from": "{{D1_BINDING_0}}",
+          "to": "{{D1_DATABASE_BINDING}}"
+        },
+        {
+          "from": "{{D1_DATABASE_ID_0}}",
+          "to": "{{D1_DATABASE_ID_0}}"
+        },
+        {
+          "from": "{{D1_DATABASE_ID_0}}",
+          "to": "{{D1_DATABASE_ID}}"
+        }
+      ]
+    },
+    {
+      "type": "created",
+      "path": "_setup.mjs",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles",
+      "fileSize": 2868
+    },
+    {
+      "type": "created",
+      "path": "template.json",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles",
+      "fileSize": 2090
+    }
+  ],
+  "sanitized": false,
+  "sanitizationMap": {}
+}

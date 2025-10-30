@@ -1,6 +1,6 @@
 /**
  * InteractivePrompter - Handles interactive value prompting for restoration
- * 
+ *
  * Provides interactive prompts for missing restoration values with validation,
  * default value support, and integration with the defaults system.
  */
@@ -13,6 +13,15 @@ export class InteractivePrompter {
     this.input = options.input || process.stdin;
     this.output = options.output || process.stdout;
     this.defaultsManager = new DefaultsManager();
+    // Detect silent/test/CI environments so prompting can be skipped.
+    this.silent = Boolean(
+      options.silent ||
+      process.env.MAKE_TEMPLATE_TEST_INPUT ||
+      process.env.MAKE_TEMPLATE_SILENT ||
+      process.env.SILENT ||
+      process.env.CI ||
+      process.env.NODE_ENV === 'test'
+    );
   }
 
   /**
@@ -57,7 +66,7 @@ export class InteractivePrompter {
   async promptForSingleValue(rl, placeholder, validator, defaultValue) {
     const description = this.getPlaceholderDescription(placeholder);
     const defaultValidator = validator || this.getDefaultValidator(placeholder);
-    
+
     return new Promise((resolve, reject) => {
       const askQuestion = () => {
         let prompt = `${description}`;
@@ -68,7 +77,7 @@ export class InteractivePrompter {
 
         rl.question(prompt, (answer) => {
           const value = answer.trim() || defaultValue || '';
-          
+
           // Validate the input
           const validationError = defaultValidator(value);
           if (validationError) {
@@ -76,7 +85,7 @@ export class InteractivePrompter {
             askQuestion(); // Retry
             return;
           }
-          
+
           resolve(value);
         });
       };
@@ -192,22 +201,27 @@ export class InteractivePrompter {
   async promptWithDefaults(missingValues, customValidators = {}) {
     // First, try to resolve values using defaults system
     const defaultsResult = await this.defaultsManager.resolveDefaults(missingValues);
-    
-    // If prompting is disabled, return only resolved defaults
-    if (!defaultsResult.promptForMissing) {
+
+    // If prompting is disabled by defaults system or by silent/test mode,
+    // return only resolved defaults.
+    if (!defaultsResult.promptForMissing || this.silent) {
+      if (this.silent && defaultsResult.stillMissing && defaultsResult.stillMissing.length > 0) {
+        // Log a concise message for debugging in CI/test runs
+        try { this.output.write('\n🔧 Skipping interactive prompts due to silent/test mode. Using defaults where available.\n\n'); } catch (e) { }
+      }
       return defaultsResult.resolved;
     }
 
     // If there are still missing values, prompt for them
     if (defaultsResult.stillMissing.length > 0) {
       this.output.write('\n🔧 Some values need to be provided for restoration:\n\n');
-      
+
       const promptedValues = await this.promptForMissingValues(
         defaultsResult.stillMissing,
         customValidators,
         defaultsResult.resolved
       );
-      
+
       // Combine resolved defaults with prompted values
       return {
         ...defaultsResult.resolved,

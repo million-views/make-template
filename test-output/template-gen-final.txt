@@ -1,0 +1,152 @@
+TAP version 13
+# Subtest: Template Generation Tests
+    # Subtest: _setup.mjs Generation
+        # Subtest: should generate _setup.mjs with correct Environment object destructuring
+        ok 1 - should generate _setup.mjs with correct Environment object destructuring
+          ---
+          duration_ms: 28.653266
+          ...
+        # Subtest: should generate _setup.mjs with tools.placeholders.replaceAll usage
+        ok 2 - should generate _setup.mjs with tools.placeholders.replaceAll usage
+          ---
+          duration_ms: 7.738999
+          ...
+        # Subtest: should generate _setup.mjs with proper placeholder mapping
+        ok 3 - should generate _setup.mjs with proper placeholder mapping
+          ---
+          duration_ms: 6.20705
+          ...
+        # Subtest: should generate _setup.mjs with logging statements
+        ok 4 - should generate _setup.mjs with logging statements
+          ---
+          duration_ms: 5.147839
+          ...
+        # Subtest: should generate project-type-specific setup script for cf-d1
+        ok 5 - should generate project-type-specific setup script for cf-d1
+          ---
+          duration_ms: 9.712698
+          ...
+        # Subtest: should generate project-type-specific setup script for vite-react
+        ok 6 - should generate project-type-specific setup script for vite-react
+          ---
+          duration_ms: 5.017703
+          ...
+        # Subtest: should generate idempotent setup script operations
+        ok 7 - should generate idempotent setup script operations
+          ---
+          duration_ms: 3.071206
+          ...
+        1..7
+    ok 1 - _setup.mjs Generation
+      ---
+      duration_ms: 68.933602
+      type: 'suite'
+      ...
+    # Subtest: template.json Generation
+        # Subtest: should generate template.json with supportedOptions structure
+        ok 1 - should generate template.json with supportedOptions structure
+          ---
+          duration_ms: 4.020188
+          ...
+        # Subtest: should generate template.json with placeholder definitions
+        ok 2 - should generate template.json with placeholder definitions
+          ---
+          duration_ms: 5.418668
+          ...
+        # Subtest: should generate template.json with project type information
+        ok 3 - should generate template.json with project type information
+          ---
+          duration_ms: 8.419994
+          ...
+        # Subtest: should generate template.json with creation timestamp and attribution
+        ok 4 - should generate template.json with creation timestamp and attribution
+          ---
+          duration_ms: 3.932947
+          ...
+        # Subtest: should generate template.json with file list
+        ok 5 - should generate template.json with file list
+          ---
+          duration_ms: 3.458824
+          ...
+        1..5
+    ok 2 - template.json Generation
+      ---
+      duration_ms: 26.958862
+      type: 'suite'
+      ...
+    # Subtest: Project-Type-Specific Template Generation
+        # Subtest: should generate cf-d1 specific template files
+        ok 1 - should generate cf-d1 specific template files
+          ---
+          duration_ms: 4.55437
+          ...
+        # Subtest: should generate cf-turso specific template files
+        ok 2 - should generate cf-turso specific template files
+          ---
+          duration_ms: 5.009778
+          ...
+        # Subtest: should generate vite-react specific template files
+        ok 3 - should generate vite-react specific template files
+          ---
+          duration_ms: 5.690131
+          ...
+        # Subtest: should generate generic template files
+        ok 4 - should generate generic template files
+          ---
+          duration_ms: 4.463439
+          ...
+        1..4
+    ok 3 - Project-Type-Specific Template Generation
+      ---
+      duration_ms: 20.677563
+      type: 'suite'
+      ...
+    # Subtest: IDE Preset Support
+        # Subtest: should include IDE preset support in setup script
+        ok 1 - should include IDE preset support in setup script
+          ---
+          duration_ms: 3.252334
+          ...
+        # Subtest: should handle IDE preset application in different project types
+        ok 2 - should handle IDE preset application in different project types
+          ---
+          duration_ms: 3.356511
+          ...
+        1..2
+    ok 4 - IDE Preset Support
+      ---
+      duration_ms: 7.077171
+      type: 'suite'
+      ...
+    # Subtest: Error Handling in Generated Templates
+        # Subtest: should include error handling in setup script
+        ok 1 - should include error handling in setup script
+          ---
+          duration_ms: 3.500797
+          ...
+        # Subtest: should validate template metadata structure
+        ok 2 - should validate template metadata structure
+          ---
+          duration_ms: 4.486896
+          ...
+        1..2
+    ok 5 - Error Handling in Generated Templates
+      ---
+      duration_ms: 8.484533
+      type: 'suite'
+      ...
+    1..5
+ok 1 - Template Generation Tests
+  ---
+  duration_ms: 133.869264
+  type: 'suite'
+  ...
+1..1
+# tests 20
+# suites 6
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 246.276735

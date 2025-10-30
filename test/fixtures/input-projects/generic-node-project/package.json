@@ -1,7 +1,7 @@
 {
-  "name": "{{PROJECT_NAME}}",
+  "name": "{{NAME}}",
   "version": "1.0.0",
-  "description": "{{PROJECT_DESCRIPTION}}",
+  "description": "{{NAME}}",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -15,10 +15,10 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "author": "{{AUTHOR}}",
+  "author": "{{NAME}}",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "{{REPOSITORY_URL}}"
+    "url": "{{NAME}}"
   }
 }

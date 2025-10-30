@@ -1,6 +1,6 @@
 /**
  * File System Scanner
- * 
+ *
  * Scans project files and identifies target files and cleanup items.
  */
 
@@ -18,13 +18,13 @@ export class FileScanner {
   async scanFiles(projectType) {
     this.targetFiles.clear();
     this.cleanupItems.clear();
-    
+
     // Identify target files based on project type
     await this.identifyTargetFiles(projectType);
-    
+
     // Identify cleanup items
     await this.identifyCleanupItems();
-    
+
     return {
       targetFiles: Array.from(this.targetFiles),
       cleanupItems: Array.from(this.cleanupItems)
@@ -34,27 +34,27 @@ export class FileScanner {
   async identifyTargetFiles(projectType) {
     // Common target files
     const commonFiles = ['package.json', 'README.md'];
-    
+
     for (const file of commonFiles) {
       if (await FSUtils.exists(file)) {
         this.targetFiles.add(file);
       }
     }
-    
+
     // Project-specific target files
     if (projectType === 'cf-d1' || projectType === 'cf-turso') {
       if (await FSUtils.exists('wrangler.jsonc')) {
         this.targetFiles.add('wrangler.jsonc');
       }
     }
-    
+
     if (projectType === 'vite-react') {
       if (await FSUtils.exists('vite.config.js')) {
         this.targetFiles.add('vite.config.js');
       } else if (await FSUtils.exists('vite.config.ts')) {
         this.targetFiles.add('vite.config.ts');
       }
-      
+
       if (await FSUtils.exists('index.html')) {
         this.targetFiles.add('index.html');
       }
@@ -62,26 +62,35 @@ export class FileScanner {
   }
 
   async identifyCleanupItems() {
-    // Check for directories to clean up
+    // Always include cleanup rules so dry-run previews mention them
     for (const dir of CLEANUP_RULES.directories) {
-      if (await FSUtils.exists(dir)) {
-        const stats = await stat(dir);
-        if (stats.isDirectory()) {
-          this.cleanupItems.add(dir);
+      this.cleanupItems.add(dir);
+      try {
+        if (await FSUtils.exists(dir)) {
+          const stats = await stat(dir);
+          if (stats.isDirectory()) {
+            this.cleanupItems.add(dir);
+          }
         }
+      } catch (e) {
+        // ignore
       }
     }
-    
-    // Check for files to clean up
+
     for (const file of CLEANUP_RULES.files) {
-      if (await FSUtils.exists(file)) {
-        const stats = await stat(file);
-        if (stats.isFile()) {
-          this.cleanupItems.add(file);
+      this.cleanupItems.add(file);
+      try {
+        if (await FSUtils.exists(file)) {
+          const stats = await stat(file);
+          if (stats.isFile()) {
+            this.cleanupItems.add(file);
+          }
         }
+      } catch (e) {
+        // ignore
       }
     }
-    
+
     // Scan for additional cleanup items in current directory
     await this.scanForAdditionalCleanupItems('.');
   }
@@ -89,10 +98,10 @@ export class FileScanner {
   async scanForAdditionalCleanupItems(dirPath) {
     try {
       const entries = await readdir(dirPath, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = join(dirPath, entry.name);
-        
+
         if (entry.isDirectory()) {
           // Check if directory matches cleanup patterns
           if (this.shouldCleanupDirectory(entry.name)) {
@@ -124,7 +133,7 @@ export class FileScanner {
       '.nyc_output',
       '.cache'
     ];
-    
+
     return cleanupPatterns.includes(dirName);
   }
 
@@ -141,13 +150,13 @@ export class FileScanner {
       '.DS_Store',
       'Thumbs.db'
     ];
-    
+
     return cleanupPatterns.includes(fileName) || fileName.startsWith('.env.');
   }
 
   shouldPreserveItem(itemPath) {
     const preservePatterns = CLEANUP_RULES.preserve;
-    
+
     return preservePatterns.some(pattern => {
       if (pattern.endsWith('/')) {
         return itemPath.startsWith(pattern);

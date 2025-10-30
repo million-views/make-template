@@ -1,4 +1,4 @@
-# My React App
+# {{README_TITLE}}
 
 A modern React application built with Vite for my-react-app project.
 

@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.0.0",
+    "projectType": "vite-react",
+    "timestamp": "2025-10-30T05:55:34.905Z",
+    "placeholderFormat": "{{PLACEHOLDER_NAME}}"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "{{PROJECT_NAME}}",
+    "{{PROJECT_DESCRIPTION}}": "{{PROJECT_DESCRIPTION}}",
+    "{{AUTHOR}}": "{{AUTHOR}}",
+    "{{README_TITLE}}": "{{README_TITLE}}",
+    "{{BASE_URL}}": "{{BASE_URL}}",
+    "{{HTML_TITLE}}": "{{HTML_TITLE}}"
+  },
+  "fileOperations": [
+    {
+      "type": "modified",
+      "path": "package.json",
+      "originalContent": "{\n  \"name\": \"{{PROJECT_NAME}}\",\n  \"version\": \"1.0.0\",\n  \"description\": \"{{PROJECT_DESCRIPTION}}\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"preview\": \"vite preview\",\n    \"test\": \"vitest\"\n  },\n  \"dependencies\": {\n    \"react\": \"^18.2.0\",\n    \"react-dom\": \"^18.2.0\"\n  },\n  \"devDependencies\": {\n    \"@types/react\": \"^18.2.37\",\n    \"@types/react-dom\": \"^18.2.15\",\n    \"@vitejs/plugin-react\": \"^4.1.1\",\n    \"vite\": \"^4.5.0\",\n    \"vitest\": \"^0.34.6\"\n  },\n  \"author\": \"{{AUTHOR}}\",\n  \"license\": \"MIT\"\n}",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 538,
+      "placeholderReplacements": [
+        {
+          "from": "{{PROJECT_NAME}}",
+          "to": "{{PROJECT_NAME}}"
+        },
+        {
+          "from": "{{PROJECT_DESCRIPTION}}",
+          "to": "{{PROJECT_DESCRIPTION}}"
+        },
+        {
+          "from": "{{AUTHOR}}",
+          "to": "{{AUTHOR}}"
+        }
+      ]
+    },
+    {
+      "type": "modified",
+      "path": "README.md",
+      "originalContent": "# {{README_TITLE}}\n\nA modern React application built with Vite for my-react-app project.\n\n## Setup\n\n1. Install dependencies: `npm install`\n2. Start development server: `npm run dev`\n3. Build for production: `npm run build`\n4. Preview production build: `npm run preview`\n\n## Features\n\n- React 18 with modern hooks\n- Vite for fast development and building\n- Hot Module Replacement (HMR)\n- TypeScript support ready\n\n## Author\n\nCreated by Test Author.",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 447,
+      "placeholderReplacements": [
+        {
+          "from": "{{README_TITLE}}",
+          "to": "{{README_TITLE}}"
+        }
+      ]
+    },
+    {
+      "type": "modified",
+      "path": "vite.config.js",
+      "originalContent": "import { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\n\nexport default defineConfig({\n  plugins: [react()],\n  base: '{{BASE_URL}}',\n  server: {\n    port: 3000,\n    open: true\n  },\n  build: {\n    outDir: 'dist',\n    sourcemap: true\n  }\n})",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 259,
+      "placeholderReplacements": [
+        {
+          "from": "{{BASE_URL}}",
+          "to": "{{BASE_URL}}"
+        }
+      ]
+    },
+    {
+      "type": "modified",
+      "path": "index.html",
+      "originalContent": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>{{HTML_TITLE}}</title>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/src/main.jsx\"></script>\n  </body>\n</html>",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 362,
+      "placeholderReplacements": [
+        {
+          "from": "{{HTML_TITLE}}",
+          "to": "{{HTML_TITLE}}"
+        }
+      ]
+    },
+    {
+      "type": "created",
+      "path": "_setup.mjs",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles",
+      "fileSize": 2340
+    },
+    {
+      "type": "created",
+      "path": "template.json",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles",
+      "fileSize": 1510
+    }
+  ],
+  "sanitized": false,
+  "sanitizationMap": {}
+}

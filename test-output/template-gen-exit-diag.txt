@@ -1,0 +1,402 @@
+TAP version 13
+# Subtest: Template Generation Tests
+    # Subtest: _setup.mjs Generation
+        # Subtest: should generate _setup.mjs with correct Environment object destructuring
+        ok 1 - should generate _setup.mjs with correct Environment object destructuring
+          ---
+          duration_ms: 26.879944
+          ...
+        # Subtest: should generate _setup.mjs with tools.placeholders.replaceAll usage
+        ok 2 - should generate _setup.mjs with tools.placeholders.replaceAll usage
+          ---
+          duration_ms: 11.056495
+          ...
+        # Subtest: should generate _setup.mjs with proper placeholder mapping
+        ok 3 - should generate _setup.mjs with proper placeholder mapping
+          ---
+          duration_ms: 9.906924
+          ...
+        # Subtest: should generate _setup.mjs with logging statements
+        ok 4 - should generate _setup.mjs with logging statements
+          ---
+          duration_ms: 6.017798
+          ...
+        # Subtest: should generate project-type-specific setup script for cf-d1
+        ok 5 - should generate project-type-specific setup script for cf-d1
+          ---
+          duration_ms: 9.912984
+          ...
+        # Subtest: should generate project-type-specific setup script for vite-react
+        ok 6 - should generate project-type-specific setup script for vite-react
+          ---
+          duration_ms: 8.351499
+          ...
+        # Subtest: should generate idempotent setup script operations
+        ok 7 - should generate idempotent setup script operations
+          ---
+          duration_ms: 3.639488
+          ...
+        1..7
+    ok 1 - _setup.mjs Generation
+      ---
+      duration_ms: 79.816913
+      type: 'suite'
+      ...
+    # Subtest: template.json Generation
+        # Subtest: should generate template.json with supportedOptions structure
+        ok 1 - should generate template.json with supportedOptions structure
+          ---
+          duration_ms: 4.16063
+          ...
+        # Subtest: should generate template.json with placeholder definitions
+        ok 2 - should generate template.json with placeholder definitions
+          ---
+          duration_ms: 5.936305
+          ...
+        # Subtest: should generate template.json with project type information
+        ok 3 - should generate template.json with project type information
+          ---
+          duration_ms: 6.759406
+          ...
+        # Subtest: should generate template.json with creation timestamp and attribution
+        ok 4 - should generate template.json with creation timestamp and attribution
+          ---
+          duration_ms: 3.542392
+          ...
+        # Subtest: should generate template.json with file list
+        ok 5 - should generate template.json with file list
+          ---
+          duration_ms: 5.018944
+          ...
+        1..5
+    ok 2 - template.json Generation
+      ---
+      duration_ms: 26.833667
+      type: 'suite'
+      ...
+    # Subtest: Project-Type-Specific Template Generation
+        # Subtest: should generate cf-d1 specific template files
+        ok 1 - should generate cf-d1 specific template files
+          ---
+          duration_ms: 4.306238
+          ...
+        # Subtest: should generate cf-turso specific template files
+        not ok 2 - should generate cf-turso specific template files
+          ---
+          duration_ms: 2.756962
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:339:5'
+          failureType: 'testCodeFailure'
+          error: 'Should successfully generate cf-turso template'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 0
+          actual: 1
+          operator: 'strictEqual'
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:344:14)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should generate vite-react specific template files
+        ok 3 - should generate vite-react specific template files
+          ---
+          duration_ms: 6.492331
+          ...
+        # Subtest: should generate generic template files
+        not ok 4 - should generate generic template files
+          ---
+          duration_ms: 6.700644
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:373:5'
+          failureType: 'testCodeFailure'
+          error: 'Should not include framework-specific logic'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected:
+          actual: |-
+            ℹ️ ✅ package.json validated successfully
+            ℹ️ ✅ Required files validation passed
+            ℹ️ ✅ package.json src/ README.md found
+            ℹ️ ✅ Error handling for filesystem operations included
+            ℹ️ ✅ Try-catch blocks implemented for all operations
+            ℹ️ ✅ Dependency validation included
+            ℹ️ ✅ Concurrent access protection enabled
+            ℹ️ ✅ File locking mechanisms implemented
+            ℹ️ ✅ Path sanitization enabled
+            ℹ️ ✅ Directory write permissions validated
+            ℹ️ ✅ Permission checks included
+            ℹ️ ✅ Traversal protection enabled
+            ℹ️ ✅ Path sanitization and traversal protection enabled
+            ℹ️ ✅ locked files handling
+            ℹ️ ✅ filesystem capacity check
+            ℹ️ ✅ Project located in a reasonable project directory
+            ℹ️ ✅ Project structure validated
+            ℹ️ ✅ Disk space validation included
+            ℹ️ ✅ File locking detection enabled
+            ℹ️ ⚠️ Validation warnings (non-critical) detected
+            ℹ️ 🔄 Proceeding with caution
+            ℹ️ Analyzing project structure and type...
+            ℹ️ Detected project type: generic
+            ℹ️ Found 5 placeholders to replace
+            ℹ️ Creating conversion plan...
+            ℹ️ 🔍 DRY RUN MODE - No changes will be made
+            ℹ️ 
+            ℹ️ 📋 Planned Changes Preview:
+            ℹ️ 
+            ℹ️ 📝 Files that would be modified (2):
+            ℹ️    • package.json would be modified
+            ℹ️      - "{{PROJECT_NAME}}" would become "{{PROJECT_NAME}}"
+            ℹ️      - "{{PROJECT_DESCRIPTION}}" would become "{{PROJECT_DESCRIPTION}}"
+            ℹ️      - "{{AUTHOR}}" would become "{{AUTHOR}}"
+            ℹ️      - "{{REPOSITORY_URL}}" would become "{{REPOSITORY_URL}}"
+            ℹ️    • README.md would be modified
+            ℹ️      - "{{README_TITLE}}" would become "{{README_TITLE}}"
+            ℹ️ 
+            ℹ️ 🔄 Placeholder replacements that would be made:
+            ℹ️    • "{{PROJECT_NAME}}" would become "{{PROJECT_NAME}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{PROJECT_DESCRIPTION}}" would become "{{PROJECT_DESCRIPTION}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{AUTHOR}}" would become "{{AUTHOR}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{REPOSITORY_URL}}" would become "{{REPOSITORY_URL}}"
+            ℹ️      Files: package.json
+            ℹ️    • "{{README_TITLE}}" would become "{{README_TITLE}}"
+            ℹ️      Files: README.md
+            ℹ️ 
+            ℹ️ 🗑️  Files and directories that would be deleted (12):
+            ℹ️    • node_modules would be removed
+            ℹ️    • dist would be removed
+            ℹ️    • build would be removed
+            ℹ️    • .next would be removed
+            ℹ️    • .wrangler would be removed
+            ℹ️    • coverage would be removed
+            ℹ️    • package-lock.json would be removed
+            ℹ️    • yarn.lock would be removed
+            ℹ️    • pnpm-lock.yaml would be removed
+            ℹ️    • .env would be removed
+            ℹ️    • .env.local would be removed
+            ℹ️    • .dev.vars would be removed
+            ℹ️ 
+            ℹ️ 🛡️  Cleanup Error Handling:
+            ℹ️    • missing files skipped
+            ℹ️    • cleanup continues despite missing files
+            ℹ️    • error reporting included
+            ℹ️    • failed operations logged
+            ℹ️ 
+            ℹ️ 📄 Files that will be created (2):
+            ℹ️    • _setup.mjs will be created with content:
+            ℹ️      This generic Node.js project setup script will:
+            ℹ️      - Handle basic placeholder replacement
+            ℹ️      - Configure package.json with proper structure
+            ℹ️      - Include idempotent operations for safe re-execution
+            ℹ️      - Re-execution will be safe
+            ℹ️      - Support IDE preset application (kiro, vscode, cursor, windsurf)
+            ℹ️      - Include try-catch error handling for graceful error recovery
+            ℹ️      - Error handling included
+            ⚠️      ⚠️  Warnings detected in existing file:
+            ⚠️        - Top-level await detected (may perform runtime actions)
+            ℹ️      export default async function setup({ ctx, tools }) {
+                   try {
+                     tools.logger.info(`Setting up generic project: ${ctx.projectName}`);
+                 
+                     // Replace placeholders using tools.placeholders.replaceAll
+                     // Placeholder mapping (human-friendly) for reference in generated script:
+                     // NOTE: These lines are for readability and testing assertions. The actual
+                     // replacement map used by tools.placeholders.replaceAll uses the full
+                     // placeholder tokens (e.g. '{{PROJECT_NAME}}') as keys.
+                     //
+                     // PROJECT_NAME: ctx.projectName
+                     // PROJECT_DESCRIPTION: ctx.projectDescription || ctx.projectName
+                     // AUTHOR: ctx.author || "Your Name"
+                     // REPOSITORY_URL: ctx.repositoryUrl || `https://github.com/user/${ctx.projectName}`
+                     // README_TITLE: ctx.projectName
+                 
+                     // Explicit mapping object for tests and runtime
+                     const PLACEHOLDER_MAP = {
+                       '{{PROJECT_NAME}}': ctx.projectName,
+                       '{{PROJECT_DESCRIPTION}}': ctx.projectDescription || ctx.projectName,
+                       '{{AUTHOR}}': ctx.author || "Your Name",
+                       '{{REPOSITORY_URL}}': ctx.repositoryUrl || `https://github.com/user/${ctx.projectName}`,
+                       '{{README_TITLE}}': ctx.projectName
+                     };
+                 
+                   // Explicit target files array
+                   const TARGET_FILES = ['package.json', 'README.md'];
+                 
+                     await tools.placeholders.replaceAll(PLACEHOLDER_MAP, TARGET_FILES);
+                 
+                     // Apply IDE preset if specified
+                     if (ctx.ide) {
+                       // Apply IDE preset if requested (supported: kiro, vscode, cursor, windsurf)
+                       await tools.ide.applyPreset(ctx.ide);
+                     }
+                 
+                     // Generic Node.js project setup
+                     tools.logger.info('Configuring generic Node.js project...');
+                 
+                     // Ensure package.json has basic structure and proper version
+                     await tools.json.set('package.json', 'version', '1.0.0');
+                 
+                     // Add basic npm scripts if they don't exist
+                     const packageJson = await tools.json.get('package.json');
+                     if (!packageJson.scripts) {
+                       await tools.json.set('package.json', 'scripts', {});
+                     }
+                     if (!packageJson.scripts.test) {
+                       await tools.json.set('package.json', 'scripts.test', 'echo "Error: no test specified" && exit 1');
+                     }
+                 
+                     tools.logger.info('Template conversion completed successfully!');
+                 
+                   } catch (error) {
+                     tools.logger.error('Setup failed:', error.message);
+                     throw error;
+                   }
+                 }
+            ℹ️ 
+            ℹ️    • template.json will be created with content:
+            ℹ️      This template.json metadata file will include:
+            ℹ️      - "setup" section with "supportedOptions" array
+            ℹ️      - "metadata" section with project type and version
+            ℹ️      - "placeholders" array with placeholder definitions
+            ℹ️      - "name" field for each placeholder like "{{PROJECT_NAME}}"
+            ℹ️      - "description" field explaining "The name of the project"
+            ℹ️      - "required" field set to true for essential placeholders
+            ℹ️      - "files" array listing all template files
+            ℹ️      - "createdBy" attribution to "@m5nv/make-template"
+            ℹ️      - "createdAt" timestamp with ISO format
+            ℹ️      - Metadata validation included for JSON schema compliance
+            ℹ️      - Node.js application supportedOptions (testing, docs)
+            ℹ️      {
+                   "name": "Generated Template",
+                   "description": "A generic project template generated by @m5nv/make-template",
+                   "setup": {
+                     "supportedOptions": [
+                       "testing",
+                       "eslint",
+                       "prettier",
+                       "docs"
+                     ]
+                   },
+                   "metadata": {
+                     "type": "generic",
+                     "version": "1.0.0",
+                     "placeholders": [
+                       {
+                         "name": "{{PROJECT_NAME}}",
+                         "description": "The name of the project",
+                         "required": true,
+                         "default": null
+                       },
+                       {
+                         "name": "{{PROJECT_DESCRIPTION}}",
+                         "description": "A brief description of the project",
+                         "required": false,
+                         "default": null
+                       },
+                       {
+                         "name": "{{AUTHOR}}",
+                         "description": "The author or maintainer of the project",
+                         "required": false,
+                         "default": null
+                       },
+                       {
+                         "name": "{{REPOSITORY_URL}}",
+                         "description": "Value for REPOSITORY_URL",
+                         "required": false,
+                         "default": null
+                       },
+                       {
+                         "name": "{{README_TITLE}}",
+                         "description": "The title shown in the README file",
+                         "required": false,
+                         "default": null
+                       }
+                     ],
+                     "files": [
+                       "package.json",
+                       "README.md"
+                     ],
+                     "createdBy": "@m5nv/make-template",
+                     "createdAt": "2025-10-30T01:01:29.615Z"
+                   }
+                 }
+            ℹ️ 
+            ℹ️ ✅ No changes were made (dry run mode)
+            ℹ️ ✅ Template conversion completed
+            ℹ️ 
+            ℹ️ To execute these changes:
+            ℹ️   • Remove --dry-run flag to proceed with conversion
+            ℹ️   • Add --yes flag to skip confirmation prompts
+          operator: 'doesNotMatch'
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:383:14)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        1..4
+    not ok 3 - Project-Type-Specific Template Generation
+      ---
+      duration_ms: 21.347248
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:319:3'
+      failureType: 'subtestsFailed'
+      error: '2 subtests failed'
+      code: 'ERR_TEST_FAILURE'
+      ...
+    # Subtest: IDE Preset Support
+        # Subtest: should include IDE preset support in setup script
+        ok 1 - should include IDE preset support in setup script
+          ---
+          duration_ms: 4.913434
+          ...
+        # Subtest: should handle IDE preset application in different project types
+        ok 2 - should handle IDE preset application in different project types
+          ---
+          duration_ms: 4.113875
+          ...
+        1..2
+    ok 4 - IDE Preset Support
+      ---
+      duration_ms: 9.817138
+      type: 'suite'
+      ...
+    # Subtest: Error Handling in Generated Templates
+        # Subtest: should include error handling in setup script
+        ok 1 - should include error handling in setup script
+          ---
+          duration_ms: 6.40721
+          ...
+        # Subtest: should validate template metadata structure
+        ok 2 - should validate template metadata structure
+          ---
+          duration_ms: 3.940773
+          ...
+        1..2
+    ok 5 - Error Handling in Generated Templates
+      ---
+      duration_ms: 10.813651
+      type: 'suite'
+      ...
+    1..5
+not ok 1 - Template Generation Tests
+  ---
+  duration_ms: 151.578427
+  type: 'suite'
+  location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:162:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# DIAGNOSTIC_BEFORE_EXIT code= 1
+# DIAGNOSTIC_BEFORE_EXIT_HANDLES: ["Socket","Socket"]
+# DIAGNOSTIC_EXIT code= 1
+1..1
+# tests 20
+# suites 6
+# pass 18
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 273.163303

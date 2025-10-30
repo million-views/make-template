@@ -1,6 +1,6 @@
 /**
  * Undo Log Manager
- * 
+ *
  * Manages creation, reading, and validation of undo logs for template restoration.
  * Implements requirements 2.1, 2.2, and 6.1 for undo log generation and management.
  */
@@ -17,10 +17,10 @@ export class UndoLogManager {
   constructor() {
     this.fileCategorizer = new FileCategorizer();
     this.logger = new Logger();
-    
+
     // Undo log schema version for compatibility checking
     this.currentVersion = '1.0.0';
-    
+
     // Sanitization patterns for removing sensitive information
     // Order matters - more specific patterns should come first
     this.sanitizationRules = {
@@ -62,7 +62,7 @@ export class UndoLogManager {
   async createUndoLog(conversionPlan, options = {}) {
     try {
       const { analysis, actions } = conversionPlan;
-      
+
       // Initialize undo log structure
       const undoLog = {
         version: this.currentVersion,
@@ -134,7 +134,7 @@ export class UndoLogManager {
     try {
       // Read original content before modification
       const originalContent = await readFile(action.file, 'utf8');
-      
+
       // Categorize the file (only if it exists)
       let categorization;
       try {
@@ -146,7 +146,7 @@ export class UndoLogManager {
           action: 'restore-content'
         };
       }
-      
+
       const fileOperation = {
         type: 'modified',
         path: action.file,
@@ -174,7 +174,7 @@ export class UndoLogManager {
   async processDeletedItem(undoLog, action, options = {}) {
     try {
       const itemPath = action.path;
-      
+
       // Check if item exists
       if (!await this.exists(itemPath)) {
         return; // Item doesn't exist, skip
@@ -183,10 +183,10 @@ export class UndoLogManager {
       // Get item stats
       const stats = await stat(itemPath);
       const isDirectory = stats.isDirectory();
-      
+
       // Categorize the item
       const categorization = await this.fileCategorizer.categorizeFile(itemPath);
-      
+
       const fileOperation = {
         type: 'deleted',
         path: itemPath,
@@ -291,8 +291,8 @@ export class UndoLogManager {
       } catch (parseError) {
         throw RestorationError.undoLogCorrupted(
           `Undo log contains invalid JSON: ${parseError.message}`,
-          { 
-            filePath, 
+          {
+            filePath,
             parseError: parseError.message,
             contentPreview: content.substring(0, 200) + (content.length > 200 ? '...' : '')
           }
@@ -311,7 +311,7 @@ export class UndoLogManager {
             versionDetails.currentVersion
           );
         }
-        
+
         // Otherwise, it's corruption
         throw RestorationError.undoLogCorrupted(
           validationError.message,
@@ -327,7 +327,7 @@ export class UndoLogManager {
       if (error instanceof RestorationError) {
         throw error;
       }
-      
+
       // Wrap other errors
       throw RestorationError.undoLogCorrupted(
         `Unexpected error reading undo log: ${error.message}`,
@@ -431,12 +431,13 @@ export class UndoLogManager {
     }
 
     const validOperationTypes = ['modified', 'deleted', 'created'];
-    const validCategories = ['userCreated', 'generated', 'templateFiles'];
+    // Include 'modified' category produced by FileCategorizer
+    const validCategories = ['userCreated', 'generated', 'templateFiles', 'modified'];
     const validActions = ['restore-content', 'regenerate', 'preserve'];
 
     for (let i = 0; i < fileOperations.length; i++) {
       const operation = fileOperations[i];
-      
+
       if (!operation || typeof operation !== 'object') {
         throw new Error(`File operation ${i} is not a valid object`);
       }
@@ -567,7 +568,7 @@ export class UndoLogManager {
       compatible: isCompatible,
       undoLogVersion,
       currentVersion,
-      reason: isCompatible 
+      reason: isCompatible
         ? 'Versions are compatible'
         : `Undo log version ${undoLogVersion} is not compatible with current version ${currentVersion}`,
       suggestions: isCompatible ? [] : [
@@ -658,7 +659,7 @@ export class UndoLogManager {
             if (!sanitizationMap[category].includes(match)) {
               sanitizationMap[category].push(match);
             }
-            
+
             // Replace the specific match with sanitized placeholder
             sanitizedValue = sanitizedValue.replace(match, rule.replacement);
           }
@@ -763,12 +764,12 @@ export class UndoLogManager {
       }
 
       // Check for operations without content where content should be stored
-      const missingContent = operations.filter(op => 
-        op.type === 'deleted' && 
-        op.category === 'userCreated' && 
+      const missingContent = operations.filter(op =>
+        op.type === 'deleted' &&
+        op.category === 'userCreated' &&
         !op.originalContent
       );
-      
+
       if (missingContent.length > 0) {
         warnings.push(`${missingContent.length} user-created files missing content for restoration`);
       }

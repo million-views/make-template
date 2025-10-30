@@ -1,6 +1,6 @@
 /**
  * Functional Tests Placeholder
- * 
+ *
  * Placeholder file for functional tests directory structure.
  */
 

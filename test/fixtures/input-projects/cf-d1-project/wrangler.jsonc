@@ -1,13 +1,13 @@
 {
-  "name": "my-d1-worker",
+  "name": "{{WORKER_NAME}}",
   "main": "src/index.js",
   "compatibility_date": "2023-10-25",
-  "account_id": "abc123def456ghi789jkl012mno345pq",
+  "account_id": "{{CLOUDFLARE_ACCOUNT_ID}}",
   "d1_databases": [
     {
-      "binding": "DB",
+      "binding": "{{D1_DATABASE_BINDING}}",
       "database_name": "my-d1-database",
-      "database_id": "d1db-12345678-90ab-cdef-1234-567890abcdef"
+      "database_id": "{{D1_DATABASE_ID}}"
     }
   ],
   "vars": {

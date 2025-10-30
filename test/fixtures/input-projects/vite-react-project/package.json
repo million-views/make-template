@@ -1,7 +1,7 @@
 {
-  "name": "my-react-app",
+  "name": "{{PROJECT_NAME}}",
   "version": "1.0.0",
-  "description": "A modern React application built with Vite",
+  "description": "{{PROJECT_DESCRIPTION}}",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -20,6 +20,6 @@
     "vite": "^4.5.0",
     "vitest": "^0.34.6"
   },
-  "author": "Test Author",
+  "author": "{{AUTHOR}}",
   "license": "MIT"
 }

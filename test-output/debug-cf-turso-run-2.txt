@@ -1,0 +1,34 @@
+ℹ️ ✅ package.json validated successfully
+ℹ️ ✅ Required files validation passed
+ℹ️ ✅ package.json src/ README.md found
+ℹ️ ✅ Error handling for filesystem operations included
+ℹ️ ✅ Try-catch blocks implemented for all operations
+ℹ️ ✅ Dependency validation included
+ℹ️ ✅ Concurrent access protection enabled
+ℹ️ ✅ File locking mechanisms implemented
+ℹ️ ✅ Path sanitization enabled
+ℹ️ ✅ Directory write permissions validated
+ℹ️ ✅ Permission checks included
+ℹ️ ✅ Traversal protection enabled
+ℹ️ ✅ Path sanitization and traversal protection enabled
+ℹ️ ✅ locked files handling
+ℹ️ ✅ filesystem capacity check
+ℹ️ ✅ Project located in a reasonable project directory
+ℹ️ ✅ Project structure validated
+ℹ️ ✅ Disk space validation included
+ℹ️ ✅ File locking detection enabled
+ℹ️ ⚠️ Validation warnings (non-critical) detected
+ℹ️ 🔄 Proceeding with caution
+ℹ️ Analyzing project structure and type...
+ℹ️ Detected project type: cf-turso
+ℹ️ ✅ wrangler.jsonc validated successfully
+❌ Unexpected error during conversion: Bad control character in string literal in JSON at position 187
+CLI threw error: no-code SyntaxError: Bad control character in string literal in JSON at position 187
+    at JSON.parse (<anonymous>)
+    at PlaceholderFinder.processCloudflareWorkerPlaceholders (file:///home/vijay/workspaces/ws-million-views/make-template/src/lib/analyzers/placeholder-finder.js:123:35)
+    at async PlaceholderFinder.processProjectSpecificPlaceholders (file:///home/vijay/workspaces/ws-million-views/make-template/src/lib/analyzers/placeholder-finder.js:112:7)
+    at async PlaceholderFinder.findPlaceholders (file:///home/vijay/workspaces/ws-million-views/make-template/src/lib/analyzers/placeholder-finder.js:38:7)
+    at async ConversionEngine.analyzeProject (file:///home/vijay/workspaces/ws-million-views/make-template/src/lib/engine.js:176:26)
+    at async ConversionEngine.convert (file:///home/vijay/workspaces/ws-million-views/make-template/src/lib/engine.js:44:24)
+    at async main (file:///home/vijay/workspaces/ws-million-views/make-template/src/bin/cli.js:436:5)
+    at async file:///home/vijay/workspaces/ws-million-views/make-template/test-output/debug-run-cf-turso.mjs:8:3

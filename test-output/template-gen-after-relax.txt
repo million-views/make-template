@@ -1,0 +1,175 @@
+TAP version 13
+# Subtest: Template Generation Tests
+    # Subtest: _setup.mjs Generation
+        # Subtest: should generate _setup.mjs with correct Environment object destructuring
+        ok 1 - should generate _setup.mjs with correct Environment object destructuring
+          ---
+          duration_ms: 22.352493
+          ...
+        # Subtest: should generate _setup.mjs with tools.placeholders.replaceAll usage
+        ok 2 - should generate _setup.mjs with tools.placeholders.replaceAll usage
+          ---
+          duration_ms: 12.841162
+          ...
+        # Subtest: should generate _setup.mjs with proper placeholder mapping
+        ok 3 - should generate _setup.mjs with proper placeholder mapping
+          ---
+          duration_ms: 7.190667
+          ...
+        # Subtest: should generate _setup.mjs with logging statements
+        ok 4 - should generate _setup.mjs with logging statements
+          ---
+          duration_ms: 25.759998
+          ...
+        # Subtest: should generate project-type-specific setup script for cf-d1
+        ok 5 - should generate project-type-specific setup script for cf-d1
+          ---
+          duration_ms: 29.799232
+          ...
+        # Subtest: should generate project-type-specific setup script for vite-react
+        ok 6 - should generate project-type-specific setup script for vite-react
+          ---
+          duration_ms: 19.107678
+          ...
+        # Subtest: should generate idempotent setup script operations
+        ok 7 - should generate idempotent setup script operations
+          ---
+          duration_ms: 11.562443
+          ...
+        1..7
+    ok 1 - _setup.mjs Generation
+      ---
+      duration_ms: 131.977563
+      type: 'suite'
+      ...
+    # Subtest: template.json Generation
+        # Subtest: should generate template.json with supportedOptions structure
+        ok 1 - should generate template.json with supportedOptions structure
+          ---
+          duration_ms: 16.537472
+          ...
+        # Subtest: should generate template.json with placeholder definitions
+        ok 2 - should generate template.json with placeholder definitions
+          ---
+          duration_ms: 9.586505
+          ...
+        # Subtest: should generate template.json with project type information
+        ok 3 - should generate template.json with project type information
+          ---
+          duration_ms: 8.882775
+          ...
+        # Subtest: should generate template.json with creation timestamp and attribution
+        ok 4 - should generate template.json with creation timestamp and attribution
+          ---
+          duration_ms: 6.181068
+          ...
+        # Subtest: should generate template.json with file list
+        ok 5 - should generate template.json with file list
+          ---
+          duration_ms: 5.609479
+          ...
+        1..5
+    ok 2 - template.json Generation
+      ---
+      duration_ms: 48.696647
+      type: 'suite'
+      ...
+    # Subtest: Project-Type-Specific Template Generation
+        # Subtest: should generate cf-d1 specific template files
+        ok 1 - should generate cf-d1 specific template files
+          ---
+          duration_ms: 8.6571
+          ...
+        # Subtest: should generate cf-turso specific template files
+        not ok 2 - should generate cf-turso specific template files
+          ---
+          duration_ms: 5.054047
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:341:5'
+          failureType: 'testCodeFailure'
+          error: 'Should successfully generate cf-turso template'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 0
+          actual: 1
+          operator: 'strictEqual'
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:346:14)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should generate vite-react specific template files
+        ok 3 - should generate vite-react specific template files
+          ---
+          duration_ms: 9.225485
+          ...
+        # Subtest: should generate generic template files
+        ok 4 - should generate generic template files
+          ---
+          duration_ms: 28.530606
+          ...
+        1..4
+    not ok 3 - Project-Type-Specific Template Generation
+      ---
+      duration_ms: 52.945291
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:321:3'
+      failureType: 'subtestsFailed'
+      error: '1 subtest failed'
+      code: 'ERR_TEST_FAILURE'
+      ...
+    # Subtest: IDE Preset Support
+        # Subtest: should include IDE preset support in setup script
+        ok 1 - should include IDE preset support in setup script
+          ---
+          duration_ms: 8.922262
+          ...
+        # Subtest: should handle IDE preset application in different project types
+        ok 2 - should handle IDE preset application in different project types
+          ---
+          duration_ms: 8.128764
+          ...
+        1..2
+    ok 4 - IDE Preset Support
+      ---
+      duration_ms: 17.693112
+      type: 'suite'
+      ...
+    # Subtest: Error Handling in Generated Templates
+        # Subtest: should include error handling in setup script
+        ok 1 - should include error handling in setup script
+          ---
+          duration_ms: 7.045119
+          ...
+        # Subtest: should validate template metadata structure
+        ok 2 - should validate template metadata structure
+          ---
+          duration_ms: 5.479831
+          ...
+        1..2
+    ok 5 - Error Handling in Generated Templates
+      ---
+      duration_ms: 13.120769
+      type: 'suite'
+      ...
+    1..5
+not ok 1 - Template Generation Tests
+  ---
+  duration_ms: 267.382377
+  type: 'suite'
+  location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/template-generation.test.js:164:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# DIAGNOSTIC_BEFORE_EXIT code= 1
+# DIAGNOSTIC_BEFORE_EXIT_HANDLES: ["Socket","Socket"]
+# DIAGNOSTIC_EXIT code= 1
+1..1
+# tests 20
+# suites 6
+# pass 19
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 393.732276

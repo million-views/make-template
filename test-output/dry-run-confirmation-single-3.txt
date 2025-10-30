@@ -1,0 +1,343 @@
+TAP version 13
+# Subtest: Dry-Run and Confirmation Tests
+    # Subtest: Dry-Run Mode Display
+        # Subtest: should display all planned changes without executing them
+        ok 1 - should display all planned changes without executing them
+          ---
+          duration_ms: 20.906804
+          ...
+        # Subtest: should show which files will be modified
+        ok 2 - should show which files will be modified
+          ---
+          duration_ms: 8.001554
+          ...
+        # Subtest: should show placeholder replacements that would occur
+        ok 3 - should show placeholder replacements that would occur
+          ---
+          duration_ms: 5.441079
+          ...
+        # Subtest: should show files and directories that would be deleted
+        ok 4 - should show files and directories that would be deleted
+          ---
+          duration_ms: 8.821999
+          ...
+        # Subtest: should show content of generated files in preview
+        not ok 5 - should show content of generated files in preview
+          ---
+          duration_ms: 6.398932
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:183:5'
+          failureType: 'testCodeFailure'
+          error: '_setup.mjs should not contain top-level side-effects: Top-level await detected (may perform runtime actions)'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: true
+          actual: false
+          operator: '=='
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:200:16)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should exit without making filesystem changes
+        ok 6 - should exit without making filesystem changes
+          ---
+          duration_ms: 9.117673
+          ...
+        1..6
+    not ok 1 - Dry-Run Mode Display
+      ---
+      duration_ms: 61.864875
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:136:3'
+      failureType: 'subtestsFailed'
+      error: '1 subtest failed'
+      code: 'ERR_TEST_FAILURE'
+      stack: |-
+        async Promise.all (index 0)
+      ...
+    # Subtest: Confirmation Prompt Behavior
+        # Subtest: should prompt for confirmation before destructive operations
+        not ok 1 - should prompt for confirmation before destructive operations
+          ---
+          duration_ms: 1.1261
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:231:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:232:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Test.start (node:internal/test_runner/test:542:17)
+            node:internal/test_runner/test:946:71
+            node:internal/per_context/primordials:487:82
+            new Promise (<anonymous>)
+            new SafePromise (node:internal/per_context/primordials:455:29)
+          ...
+        # Subtest: should proceed when user confirms with "y"
+        not ok 2 - should proceed when user confirms with "y"
+          ---
+          duration_ms: 0.236056
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:242:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:243:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Promise.all (index 0)
+            async Suite.run (node:internal/test_runner/test:948:7)
+          ...
+        # Subtest: should proceed when user confirms with "yes"
+        not ok 3 - should proceed when user confirms with "yes"
+          ---
+          duration_ms: 0.230215
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:251:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:252:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should cancel when user declines with "n"
+        not ok 4 - should cancel when user declines with "n"
+          ---
+          duration_ms: 0.251556
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:260:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:261:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should cancel when user declines with "no"
+        not ok 5 - should cancel when user declines with "no"
+          ---
+          duration_ms: 0.218546
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:270:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:271:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should default to "no" on empty input
+        not ok 6 - should default to "no" on empty input
+          ---
+          duration_ms: 0.293936
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:279:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:280:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should handle invalid input gracefully
+        not ok 7 - should handle invalid input gracefully
+          ---
+          duration_ms: 0.321899
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:289:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:290:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        1..7
+    not ok 2 - Confirmation Prompt Behavior
+      ---
+      duration_ms: 3.895704
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:230:3'
+      failureType: 'subtestsFailed'
+      error: '7 subtests failed'
+      code: 'ERR_TEST_FAILURE'
+      ...
+    # Subtest: --yes Option Behavior
+        # Subtest: should skip confirmation prompts with --yes flag
+        not ok 1 - should skip confirmation prompts with --yes flag
+          ---
+          duration_ms: 71.414932
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:301:5'
+          failureType: 'testCodeFailure'
+          error: 'Should indicate confirmation skipped'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected:
+          actual: |-
+            ℹ️ ✅ package.json validated successfully
+            ℹ️ ✅ Required files validation passed
+            ℹ️ ✅ package.json src/ README.md found
+            ℹ️ ✅ Error handling for filesystem operations included
+            ℹ️ ✅ Try-catch blocks implemented for all operations
+            ℹ️ ✅ Dependency validation included
+            ℹ️ ✅ Concurrent access protection enabled
+            ℹ️ ✅ File locking mechanisms implemented
+            ℹ️ ✅ Path sanitization enabled
+            ℹ️ ✅ Directory write permissions validated
+            ℹ️ ✅ Permission checks included
+            ℹ️ ✅ Traversal protection enabled
+            ℹ️ ✅ Path sanitization and traversal protection enabled
+            ℹ️ ✅ locked files handling
+            ℹ️ ✅ filesystem capacity check
+            ℹ️ ✅ Project located in a reasonable project directory
+            ℹ️ ✅ Project structure validated
+            ℹ️ ✅ Disk space validation included
+            ℹ️ ✅ File locking detection enabled
+            ℹ️ ⚠️ Validation warnings (non-critical) detected
+            ℹ️ 🔄 Proceeding with caution
+            ℹ️ Analyzing project structure and type...
+            ℹ️ Detected project type: generic
+            ℹ️ Found 5 placeholders to replace
+            ℹ️ Creating conversion plan...
+            ℹ️ Auto-confirmed with --yes flag. Starting conversion process...
+            ℹ️ Executing conversion plan...
+            ℹ️ 📋 Generating undo log for restoration...
+            ℹ️    ✅ Created .template-undo.json
+            ℹ️ 📝 Modifying files with placeholder replacements...
+            ℹ️    ✅ Modified package.json
+            ℹ️    ✅ Modified README.md
+            ℹ️ 🗑️  Cleaning up unnecessary files...
+            ℹ️    ✅ Removed node_modules
+            ℹ️    ✅ Removed dist
+            ℹ️    ✅ Removed build
+            ℹ️    ✅ Removed .next
+            ℹ️    ✅ Removed .wrangler
+            ℹ️    ✅ Removed coverage
+            ℹ️    ✅ Removed package-lock.json
+            ℹ️    ✅ Removed yarn.lock
+            ℹ️    ✅ Removed pnpm-lock.yaml
+            ℹ️    ✅ Removed .env
+            ℹ️    ✅ Removed .env.local
+            ℹ️    ✅ Removed .dev.vars
+            ℹ️ 📄 Creating template files...
+            ℹ️    ✅ Created _setup.mjs
+            ℹ️    ✅ Created template.json
+            ✅ Template conversion completed successfully!
+          operator: 'match'
+          stack: |-
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:307:14)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Promise.all (index 0)
+            async Suite.run (node:internal/test_runner/test:948:7)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should work with --yes and --dry-run together
+        ok 2 - should work with --yes and --dry-run together
+          ---
+          duration_ms: 6.684726
+          ...
+        # Subtest: should proceed immediately with --yes flag
+        ok 3 - should proceed immediately with --yes flag
+          ---
+          duration_ms: 10.318453
+          ...
+        1..3
+    not ok 3 - --yes Option Behavior
+      ---
+      duration_ms: 89.462073
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:300:3'
+      failureType: 'subtestsFailed'
+      error: '1 subtest failed'
+      code: 'ERR_TEST_FAILURE'
+      ...
+    # Subtest: User Input Handling
+        # Subtest: should handle case-insensitive input
+        not ok 1 - should handle case-insensitive input
+          ---
+          duration_ms: 0.519661
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:333:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:334:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Test.start (node:internal/test_runner/test:542:17)
+            node:internal/test_runner/test:946:71
+            node:internal/per_context/primordials:487:82
+            new Promise (<anonymous>)
+            new SafePromise (node:internal/per_context/primordials:455:29)
+          ...
+        # Subtest: should handle whitespace in input
+        not ok 2 - should handle whitespace in input
+          ---
+          duration_ms: 0.45579
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:341:5'
+          failureType: 'testCodeFailure'
+          error: 'Cannot set property stdin of #<process> which has only a getter'
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:110:21
+            runCLIWithInput (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:132:5)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/dry-run-confirmation.test.js:342:28)
+            Test.runInAsyncScope (node:async_hooks:206:9)
+            Test.run (node:internal/test_runner/test:631:25)
+            Suite.processPendingSubtests (node:internal/test_runner/test:374:18)
+            Test.postRun (node:internal/test_runner/test:715:19)
+            Test.run (node:internal/test_runner/test:673:12)
+            async Promise.all (index 0)
+            async Suite.run (node:internal/test_runner/test:948:7)
+          ...
+# Are you sure you want to proceed? This will modify and delete files. [y/N]: 

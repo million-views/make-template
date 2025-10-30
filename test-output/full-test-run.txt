@@ -1,0 +1,246 @@
+
+> @m5nv/make-template@1.0.0 test
+> node --test test/**/*.test.js
+
+TAP version 13
+# Subtest: Cleanup Operations Tests
+    # Subtest: Node Modules and Lock Files Removal
+        # Subtest: should plan removal of node_modules directory
+        ok 1 - should plan removal of node_modules directory
+          ---
+          duration_ms: 52.849292
+          ...
+        # Subtest: should plan removal of package-lock.json
+        ok 2 - should plan removal of package-lock.json
+          ---
+          duration_ms: 39.482224
+          ...
+        # Subtest: should plan removal of yarn.lock
+        ok 3 - should plan removal of yarn.lock
+          ---
+          duration_ms: 46.430586
+          ...
+        # Subtest: should plan removal of pnpm-lock.yaml if present
+        ok 4 - should plan removal of pnpm-lock.yaml if present
+          ---
+          duration_ms: 29.3606
+          ...
+        1..4
+    ok 1 - Node Modules and Lock Files Removal
+      ---
+      duration_ms: 182.308083
+      type: 'suite'
+      ...
+    # Subtest: Build Output Directories Removal
+        # Subtest: should plan removal of dist directory
+        ok 1 - should plan removal of dist directory
+          ---
+          duration_ms: 41.927459
+          ...
+        # Subtest: should plan removal of build directory
+        ok 2 - should plan removal of build directory
+          ---
+          duration_ms: 13.989035
+          ...
+        # Subtest: should plan removal of .next directory
+        ok 3 - should plan removal of .next directory
+          ---
+          duration_ms: 15.900985
+          ...
+        # Subtest: should plan removal of .wrangler directory
+        ok 4 - should plan removal of .wrangler directory
+          ---
+          duration_ms: 14.231871
+          ...
+        # Subtest: should plan removal of coverage directory
+        ok 5 - should plan removal of coverage directory
+          ---
+          duration_ms: 12.032085
+          ...
+        1..5
+    ok 2 - Build Output Directories Removal
+      ---
+      duration_ms: 99.891804
+      type: 'suite'
+      ...
+    # Subtest: Version Control Preservation
+        # Subtest: should preserve .git directory
+        not ok 1 - should preserve .git directory
+          ---
+          duration_ms: 13.800189
+          location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/cleanup-operations.test.js:149:5'
+          failureType: 'testCodeFailure'
+          error: 'Should successfully plan cleanup'
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 0
+          actual: 'VALIDATION_ERROR'
+          operator: 'strictEqual'
+          stack: |-
+            assertDryRunContains (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/cleanup-operations.test.js:67:10)
+            TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/cleanup-operations.test.js:153:7)
+            async Test.run (node:internal/test_runner/test:632:9)
+            async Promise.all (index 0)
+            async Suite.run (node:internal/test_runner/test:948:7)
+            async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)
+          ...
+        # Subtest: should confirm version control preservation
+        ok 2 - should confirm version control preservation
+          ---
+          duration_ms: 21.852993
+          ...
+        1..2
+    not ok 3 - Version Control Preservation
+      ---
+      duration_ms: 36.715826
+      type: 'suite'
+      location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/cleanup-operations.test.js:148:3'
+      failureType: 'subtestsFailed'
+      error: '1 subtest failed'
+      code: 'ERR_TEST_FAILURE'
+      ...
+    # Subtest: Environment-Specific Files Removal
+        # Subtest: should plan removal of .env files
+        ok 1 - should plan removal of .env files
+          ---
+          duration_ms: 20.103013
+          ...
+        # Subtest: should plan removal of .env.local files
+        ok 2 - should plan removal of .env.local files
+          ---
+          duration_ms: 10.754085
+          ...
+        # Subtest: should plan removal of .dev.vars files
+        ok 3 - should plan removal of .dev.vars files
+          ---
+          duration_ms: 25.625882
+          ...
+        # Subtest: should warn about sensitive data removal
+        ok 4 - should warn about sensitive data removal
+          ---
+          duration_ms: 12.49597
+          ...
+        1..4
+    ok 4 - Environment-Specific Files Removal
+      ---
+      duration_ms: 70.300292
+      type: 'suite'
+      ...
+    # Subtest: Essential Template Files Preservation
+        # Subtest: should preserve source code directories
+        ok 1 - should preserve source code directories
+          ---
+          duration_ms: 26.700651
+          ...
+        # Subtest: should preserve migrations directory
+        ok 2 - should preserve migrations directory
+          ---
+          duration_ms: 68.76278
+          ...
+        # Subtest: should preserve public directory
+        ok 3 - should preserve public directory
+          ---
+          duration_ms: 24.613677
+          ...
+        # Subtest: should preserve configuration files
+        ok 4 - should preserve configuration files
+          ---
+          duration_ms: 38.934571
+          ...
+        # Subtest: should preserve README and documentation files
+        ok 5 - should preserve README and documentation files
+          ---
+          duration_ms: 30.33178
+          ...
+        # Subtest: should preserve wrangler.jsonc for Cloudflare projects
+        ok 6 - should preserve wrangler.jsonc for Cloudflare projects
+          ---
+          duration_ms: 13.319247
+          ...
+        1..6
+    ok 5 - Essential Template Files Preservation
+      ---
+      duration_ms: 204.50702
+      type: 'suite'
+      ...
+    # Subtest: Cleanup Safety and Validation
+        # Subtest: should validate cleanup operations before execution
+        ok 1 - should validate cleanup operations before execution
+          ---
+          duration_ms: 43.504715
+          ...
+        # Subtest: should show cleanup summary with file counts
+        ok 2 - should show cleanup summary with file counts
+          ---
+          duration_ms: 16.225055
+          ...
+        # Subtest: should handle permission issues gracefully
+        ok 3 - should handle permission issues gracefully
+          ---
+          duration_ms: 11.916953
+          ...
+        # Subtest: should provide rollback information
+        ok 4 - should provide rollback information
+          ---
+          duration_ms: 16.826564
+          ...
+        1..4
+    ok 6 - Cleanup Safety and Validation
+      ---
+      duration_ms: 89.642051
+      type: 'suite'
+      ...
+    # Subtest: Project-Type-Specific Cleanup Rules
+        # Subtest: should apply Cloudflare-specific cleanup for cf-d1 projects
+        ok 1 - should apply Cloudflare-specific cleanup for cf-d1 projects
+          ---
+          duration_ms: 18.244251
+          ...
+        # Subtest: should apply Vite-specific cleanup for vite-react projects
+        ok 2 - should apply Vite-specific cleanup for vite-react projects
+          ---
+          duration_ms: 29.740536
+          ...
+        # Subtest: should apply generic cleanup for generic projects
+        ok 3 - should apply generic cleanup for generic projects
+          ---
+          duration_ms: 35.820745
+          ...
+        1..3
+    ok 7 - Project-Type-Specific Cleanup Rules
+      ---
+      duration_ms: 84.98794
+      type: 'suite'
+      ...
+    # Subtest: Cleanup Error Handling
+        # Subtest: should handle missing files gracefully
+        ok 1 - should handle missing files gracefully
+          ---
+          duration_ms: 11.582481
+          ...
+        # Subtest: should provide detailed error reporting
+        ok 2 - should provide detailed error reporting
+          ---
+          duration_ms: 14.773065
+          ...
+        1..2
+    ok 8 - Cleanup Error Handling
+      ---
+      duration_ms: 27.116903
+      type: 'suite'
+      ...
+    1..8
+not ok 1 - Cleanup Operations Tests
+  ---
+  duration_ms: 801.269169
+  type: 'suite'
+  location: 'file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/cleanup-operations.test.js:79:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: /home/vijay/workspaces/ws-million-views/make-template/test/functional/cli-interface.test.js
+ok 2 - /home/vijay/workspaces/ws-million-views/make-template/test/functional/cli-interface.test.js
+  ---
+  duration_ms: 254.841229
+  ...
