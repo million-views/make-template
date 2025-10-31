@@ -1,0 +1,12 @@
+{
+  "message": "Should exit with error",
+  "name": "AssertionError",
+  "stack": [
+    "AssertionError [ERR_ASSERTION]: Should exit with error",
+    "    at file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/safety-validation.test.js:385:14",
+    "    at async TestContext.<anonymous> (file:///home/vijay/workspaces/ws-million-views/make-template/test/functional/safety-validation.test.js:41:14)",
+    "    at async Test.run (node:internal/test_runner/test:632:9)",
+    "    at async Suite.processPendingSubtests (node:internal/test_runner/test:374:7)"
+  ],
+  "time": "2025-10-31T02:22:44.044Z"
+}

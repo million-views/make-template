@@ -8,11 +8,19 @@ export default async function setup({ ctx, tools }) {
     // replacement map used by tools.placeholders.replaceAll uses the full
     // placeholder tokens (e.g. '{{PROJECT_NAME}}') as keys.
     //
-    // NAME: ctx.projectName
+    // PROJECT_NAME: ctx.projectName
+    // PROJECT_DESCRIPTION: ctx.projectDescription || ctx.projectName
+    // AUTHOR: ctx.author || "Your Name"
+    // REPOSITORY_URL: ctx.repositoryUrl || `https://github.com/user/${ctx.projectName}`
+    // README_TITLE: ctx.projectName
 
     // Explicit mapping object for tests and runtime
     const PLACEHOLDER_MAP = {
-      '{{NAME}}': ctx.projectName
+      '{{PROJECT_NAME}}': ctx.projectName,
+      '{{PROJECT_DESCRIPTION}}': ctx.projectDescription || ctx.projectName,
+      '{{AUTHOR}}': ctx.author || "Your Name",
+      '{{REPOSITORY_URL}}': ctx.repositoryUrl || `https://github.com/user/${ctx.projectName}`,
+      '{{README_TITLE}}': ctx.projectName
     };
 
   // Explicit target files array

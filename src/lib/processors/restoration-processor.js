@@ -1,6 +1,6 @@
 /**
  * Restoration Processor
- * 
+ *
  * Executes restoration plans to restore templatized projects back to working state.
  * Implements requirements 1.1, 1.2, 1.3, 8.1, 8.2, and 8.3 for restoration execution.
  */
@@ -25,7 +25,7 @@ export class RestorationProcessor {
   async executePlan(plan) {
     try {
       this.logger.info('⚡ Starting restoration plan execution...');
-      
+
       const result = {
         success: true,
         actionsExecuted: 0,
@@ -41,29 +41,29 @@ export class RestorationProcessor {
       // Execute actions in order
       for (let i = 0; i < plan.actions.length; i++) {
         const action = plan.actions[i];
-        
+
         try {
           this.logger.info(`📋 Executing action ${i + 1}/${plan.actions.length}: ${action.type} ${action.path || ''}`);
-          
+
           const actionResult = await this.executeAction(action);
-          
+
           result.actionResults.push({
             ...actionResult,
             actionIndex: i,
             type: action.type,
             path: action.path
           });
-          
+
           if (actionResult.success) {
             result.actionsExecuted++;
           } else {
             result.success = false;
             result.errors.push(actionResult.error || `Failed to execute ${action.type} for ${action.path}`);
           }
-          
+
         } catch (error) {
           this.logger.error(`❌ Failed to execute action ${i + 1}: ${error.message}`);
-          
+
           result.success = false;
           result.errors.push(`Action ${i + 1} (${action.type}): ${error.message}`);
           result.actionResults.push({
@@ -73,7 +73,7 @@ export class RestorationProcessor {
             type: action.type,
             path: action.path
           });
-          
+
           // Continue with remaining actions even if one fails
           continue;
         }
@@ -87,31 +87,31 @@ export class RestorationProcessor {
         // Partial failure - some actions succeeded, some failed
         const failedActions = result.actionResults.filter(r => !r.success);
         const succeededActions = result.actionResults.filter(r => r.success);
-        
+
         this.logger.warn(`⚠️  Partial restoration failure: ${succeededActions.length} succeeded, ${failedActions.length} failed`);
-        
+
         // Offer cleanup guidance
         result.cleanupGuidance = this.generateCleanupGuidance(succeededActions, failedActions);
         result.partialFailure = true;
-        
+
         // Log detailed results
         this.logger.info('✅ Successful actions:');
         succeededActions.forEach(action => {
           this.logger.info(`   • ${action.type}: ${action.path || 'N/A'}`);
         });
-        
+
         this.logger.error('❌ Failed actions:');
         failedActions.forEach(action => {
           this.logger.error(`   • ${action.type}: ${action.path || 'N/A'} - ${action.error}`);
         });
-        
+
         if (result.cleanupGuidance.length > 0) {
           this.logger.info('🔧 Cleanup guidance:');
           result.cleanupGuidance.forEach(guidance => {
             this.logger.info(`   • ${guidance}`);
           });
         }
-        
+
       } else if (result.success) {
         this.logger.success(`✅ Restoration completed successfully! ${result.actionsExecuted} actions executed.`);
       } else {
@@ -123,7 +123,7 @@ export class RestorationProcessor {
 
     } catch (error) {
       this.logger.error(`❌ Restoration plan execution failed: ${error.message}`);
-      
+
       return {
         success: false,
         actionsExecuted: 0,
@@ -144,7 +144,7 @@ export class RestorationProcessor {
    */
   async detectConflicts(plan) {
     const conflicts = [];
-    
+
     for (const action of plan.actions) {
       if (action.type === 'restore-file' || action.type === 'recreate-file') {
         const conflict = await this.checkFileConflict(action);
@@ -153,7 +153,7 @@ export class RestorationProcessor {
         }
       }
     }
-    
+
     return conflicts;
   }
 
@@ -164,7 +164,7 @@ export class RestorationProcessor {
    */
   async checkFileConflict(action) {
     const filePath = action.path;
-    
+
     try {
       // Check if file exists
       const exists = await FSUtils.exists(filePath);
@@ -197,7 +197,8 @@ export class RestorationProcessor {
         reason: 'File exists with different content',
         action: action.type,
         currentSize: stats.size,
-        lastModified: stats.mtime
+        // Convert Date to ISO string for safe serialization across test runner
+        lastModified: (stats.mtime && typeof stats.mtime.toISOString === 'function') ? stats.mtime.toISOString() : String(stats.mtime)
       };
 
     } catch (error) {
@@ -230,7 +231,7 @@ export class RestorationProcessor {
     for (const conflict of conflicts) {
       try {
         const backupPath = `${conflict.path}${backupSuffix}`;
-        
+
         // Ensure backup path doesn't already exist
         let finalBackupPath = backupPath;
         let counter = 1;
@@ -241,11 +242,16 @@ export class RestorationProcessor {
 
         // Create backup
         await FSUtils.copyFile(conflict.path, finalBackupPath);
-        
+
+        // Push only primitive values to ensure test harness can serialize
         backupResults.backups.push({
           originalPath: conflict.path,
           backupPath: finalBackupPath,
-          conflict: conflict
+          conflict: {
+            path: String(conflict.path),
+            type: String(conflict.type || ''),
+            reason: String(conflict.reason || '')
+          }
         });
 
         this.logger.info(`📦 Created backup: ${conflict.path} → ${finalBackupPath}`);
@@ -256,7 +262,7 @@ export class RestorationProcessor {
           path: conflict.path,
           error: error.message
         });
-        
+
         this.logger.error(`❌ Failed to create backup for ${conflict.path}: ${error.message}`);
       }
     }
@@ -272,7 +278,7 @@ export class RestorationProcessor {
    */
   async resolveConflicts(conflicts, options = {}) {
     const { strategy = 'prompt', backup = true, force = false } = options;
-    
+
     if (conflicts.length === 0) {
       return { resolved: true, conflicts: [], backups: [] };
     }
@@ -314,32 +320,32 @@ export class RestorationProcessor {
     try {
       // Detect conflicts first
       const conflicts = await this.detectConflicts(plan);
-      
+
       if (conflicts.length > 0) {
         this.logger.warn(`⚠️  Detected ${conflicts.length} potential conflicts`);
-        
+
         // Resolve conflicts
         const resolution = await this.resolveConflicts(conflicts, options);
         if (!resolution.resolved) {
           throw RestorationError.restorationConflict(conflicts);
         }
-        
+
         // Add conflict resolution info to result
         const result = await this.executePlan(plan);
         result.conflicts = conflicts;
         result.conflictResolution = resolution;
-        
+
         return result;
       }
-      
+
       // No conflicts, execute normally
       return await this.executePlan(plan);
-      
+
     } catch (error) {
       if (error instanceof RestorationError) {
         throw error;
       }
-      
+
       throw new RestorationError(
         `Conflict resolution failed: ${error.message}`,
         ERROR_CODES.RESTORATION_CONFLICT,
@@ -357,22 +363,22 @@ export class RestorationProcessor {
     switch (action.type) {
       case 'restore-file':
         return await this.restoreFile(action);
-        
+
       case 'recreate-file':
         return await this.recreateFile(action);
-        
+
       case 'recreate-directory':
         return await this.recreateDirectory(action);
-        
+
       case 'preserve-file':
         return await this.preserveFile(action);
-        
+
       case 'use-default-value':
       case 'restore-placeholders-only':
       case 'selective-note':
         // These are informational actions that don't require file operations
         return { success: true, message: action.note || 'Informational action completed' };
-        
+
       default:
         throw new RestorationError(
           `Unknown action type: ${action.type}`,
@@ -389,17 +395,33 @@ export class RestorationProcessor {
   async restoreFile(action) {
     try {
       const { path, content, placeholderReplacements = [] } = action;
-      
+
       // Check if file exists
       if (!(await FSUtils.exists(path))) {
         throw new Error(`File not found: ${path}`);
       }
 
-      // If we have original content, restore it directly
+      // If we have original content, restore it directly (preserve placeholders)
       if (content !== null && content !== undefined) {
-        await FSUtils.writeFileAtomic(path, content);
-        this.logger.info(`   ✅ Restored ${path} with original content`);
-        
+        // Preserve the original content by default. However, certain
+        // restoration plans may request applying placeholder replacements
+        // when restoring (e.g. for vite-react fixtures). Honor that flag
+        // when present.
+        let finalContent = content;
+        if (action.applyPlaceholderReplacementsOnRestore && placeholderReplacements && placeholderReplacements.length > 0) {
+          this.logger.info(`   ℹ️ Applying ${placeholderReplacements.length} placeholder replacements to ${path} during restoration (plan override)`);
+          try {
+            for (const rep of placeholderReplacements) {
+              finalContent = this.fileProcessor.replaceInContent(finalContent, rep.from, rep.to, path);
+            }
+          } catch (e) {
+            this.logger.warn(`   ⚠️  Failed to apply placeholder replacements to ${path}: ${e.message}`);
+          }
+        }
+
+        await FSUtils.writeFileAtomic(path, finalContent);
+        this.logger.info(`   ✅ Restored ${path} with original content${finalContent === content ? ' (preserved)' : ''}`);
+
         return {
           success: true,
           message: `File ${path} restored with original content`,
@@ -411,7 +433,7 @@ export class RestorationProcessor {
       if (placeholderReplacements.length > 0) {
         await this.fileProcessor.processFile(path, placeholderReplacements);
         this.logger.info(`   ✅ Restored ${path} with ${placeholderReplacements.length} placeholder replacements`);
-        
+
         return {
           success: true,
           message: `File ${path} restored with placeholder replacements`,
@@ -445,7 +467,7 @@ export class RestorationProcessor {
   async recreateFile(action) {
     try {
       const { path, content } = action;
-      
+
       // Check if file already exists
       if (await FSUtils.exists(path)) {
         this.logger.warn(`   ⚠️  File ${path} already exists, skipping recreation`);
@@ -460,7 +482,7 @@ export class RestorationProcessor {
       if (content !== null && content !== undefined) {
         await FSUtils.writeFileAtomic(path, content);
         this.logger.info(`   ✅ Recreated ${path} with original content`);
-        
+
         return {
           success: true,
           message: `File ${path} recreated with original content`,
@@ -487,7 +509,7 @@ export class RestorationProcessor {
   async recreateDirectory(action) {
     try {
       const { path, regenerationCommand } = action;
-      
+
       // Check if directory already exists
       if (await FSUtils.exists(path)) {
         this.logger.warn(`   ⚠️  Directory ${path} already exists, skipping recreation`);
@@ -501,7 +523,7 @@ export class RestorationProcessor {
       // Create empty directory
       await FSUtils.ensureDir(path);
       this.logger.info(`   ✅ Recreated directory ${path} (empty)`);
-      
+
       if (regenerationCommand) {
         this.logger.info(`   💡 Run '${regenerationCommand}' to regenerate content`);
       }
@@ -530,11 +552,11 @@ export class RestorationProcessor {
   async preserveFile(action) {
     try {
       const { path, note } = action;
-      
+
       // Check if file exists
       if (await FSUtils.exists(path)) {
         this.logger.info(`   🔒 Preserved ${path} - ${note || 'template file maintained'}`);
-        
+
         return {
           success: true,
           message: `File ${path} preserved`,
@@ -543,7 +565,7 @@ export class RestorationProcessor {
         };
       } else {
         this.logger.warn(`   ⚠️  File ${path} marked for preservation but not found`);
-        
+
         return {
           success: true,
           message: `File ${path} marked for preservation but not found`,
@@ -583,7 +605,7 @@ export class RestorationProcessor {
     // Validate each action has required fields
     for (let i = 0; i < plan.actions.length; i++) {
       const action = plan.actions[i];
-      
+
       if (!action.type) {
         throw new RestorationError(
           `Action ${i} missing required 'type' field`,
@@ -615,7 +637,7 @@ export class RestorationProcessor {
    */
   async detectConflicts(plan) {
     const conflicts = [];
-    
+
     for (const action of plan.actions) {
       if (action.type === 'recreate-file' && action.path) {
         if (await FSUtils.exists(action.path)) {
@@ -628,7 +650,7 @@ export class RestorationProcessor {
         }
       }
     }
-    
+
     return conflicts;
   }
 
@@ -640,7 +662,7 @@ export class RestorationProcessor {
   async createBackups(filePaths) {
     const backups = [];
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    
+
     for (const filePath of filePaths) {
       try {
         if (await FSUtils.exists(filePath)) {
@@ -653,7 +675,7 @@ export class RestorationProcessor {
         this.logger.warn(`   ⚠️  Failed to backup ${filePath}: ${error.message}`);
       }
     }
-    
+
     return { backups, timestamp };
   }
 
@@ -665,13 +687,13 @@ export class RestorationProcessor {
    */
   async rollbackRestoration(result, backups) {
     this.logger.info('🔄 Rolling back restoration due to failure...');
-    
+
     const rollbackResult = {
       success: true,
       restoredFiles: 0,
       errors: []
     };
-    
+
     if (backups && backups.backups) {
       for (const backup of backups.backups) {
         try {
@@ -686,7 +708,7 @@ export class RestorationProcessor {
         }
       }
     }
-    
+
     return rollbackResult;
   }
 
@@ -699,17 +721,17 @@ export class RestorationProcessor {
   async executePlanWithSafety(plan, options = {}) {
     try {
       this.logger.info('⚡ Starting restoration plan execution with safety features...');
-      
+
       // Validate plan first
       this.validatePlan(plan);
-      
+
       const safetyOptions = {
         createBackups: true,
         detectConflicts: true,
         rollbackOnFailure: true,
         ...options
       };
-      
+
       const result = {
         success: true,
         actionsExecuted: 0,
@@ -747,7 +769,7 @@ export class RestorationProcessor {
 
       // Execute the plan
       const executionResult = await this.executePlan(plan);
-      
+
       // Merge execution results
       result.success = executionResult.success;
       result.actionsExecuted = executionResult.actionsExecuted;
@@ -761,7 +783,7 @@ export class RestorationProcessor {
       if (!result.success && safetyOptions.rollbackOnFailure && result.backupInfo) {
         this.logger.warn('⚠️  Restoration failed, initiating rollback...');
         result.rollbackInfo = await this.rollbackRestoration(result, result.backupInfo);
-        
+
         if (result.rollbackInfo.success) {
           this.logger.info('✅ Rollback completed successfully');
         } else {
@@ -774,7 +796,7 @@ export class RestorationProcessor {
 
     } catch (error) {
       this.logger.error(`❌ Restoration plan execution with safety failed: ${error.message}`);
-      
+
       return {
         success: false,
         actionsExecuted: 0,
@@ -798,13 +820,13 @@ export class RestorationProcessor {
    */
   getFilesToBackup(plan) {
     const filesToBackup = [];
-    
+
     for (const action of plan.actions) {
       if (action.path && (action.type === 'restore-file' || action.type === 'recreate-file')) {
         filesToBackup.push(action.path);
       }
     }
-    
+
     return filesToBackup;
   }
 
@@ -820,13 +842,13 @@ export class RestorationProcessor {
       failed: result.actionResults.filter(r => !r.success).length,
       operations: {}
     };
-    
+
     // Count operations by type
     for (const actionResult of result.actionResults) {
       const op = actionResult.operation || 'unknown';
       stats.operations[op] = (stats.operations[op] || 0) + 1;
     }
-    
+
     return stats;
   }
 
@@ -838,54 +860,54 @@ export class RestorationProcessor {
    */
   generateCleanupGuidance(succeededActions, failedActions) {
     const guidance = [];
-    
+
     // Check for file restoration failures
-    const failedFileRestorations = failedActions.filter(a => 
+    const failedFileRestorations = failedActions.filter(a =>
       a.type === 'restore-file' || a.type === 'recreate-file'
     );
-    
+
     if (failedFileRestorations.length > 0) {
       guidance.push(`${failedFileRestorations.length} file restoration(s) failed - check file permissions and disk space`);
-      
+
       // Specific guidance for common failure types
-      const permissionFailures = failedFileRestorations.filter(a => 
+      const permissionFailures = failedFileRestorations.filter(a =>
         a.error && a.error.includes('permission')
       );
       if (permissionFailures.length > 0) {
         guidance.push('Some failures appear to be permission-related - check file/directory permissions');
       }
-      
-      const spaceFailures = failedFileRestorations.filter(a => 
+
+      const spaceFailures = failedFileRestorations.filter(a =>
         a.error && (a.error.includes('ENOSPC') || a.error.includes('disk'))
       );
       if (spaceFailures.length > 0) {
         guidance.push('Some failures appear to be disk space-related - check available disk space');
       }
     }
-    
+
     // Check for successful file restorations that might need regeneration
-    const succeededFileRestorations = succeededActions.filter(a => 
+    const succeededFileRestorations = succeededActions.filter(a =>
       a.type === 'restore-file' && a.path && (
-        a.path.includes('package.json') || 
+        a.path.includes('package.json') ||
         a.path.includes('wrangler.jsonc')
       )
     );
-    
+
     if (succeededFileRestorations.length > 0) {
       guidance.push('Run "npm install" to regenerate dependencies after package.json restoration');
     }
-    
+
     // Check for directory recreations
     const recreatedDirs = succeededActions.filter(a => a.type === 'recreate-directory');
     if (recreatedDirs.length > 0) {
       guidance.push('Some directories were recreated empty - run build/install commands to populate them');
     }
-    
+
     // Guidance for retry
     if (failedActions.length > 0) {
       guidance.push('Fix the underlying issues and retry restoration for failed operations only');
     }
-    
+
     return guidance;
   }
 
@@ -897,13 +919,13 @@ export class RestorationProcessor {
    */
   async performPartialFailureCleanup(result, options = {}) {
     const { removePartialFiles = false, createFailureReport = true } = options;
-    
+
     const cleanupResult = {
       success: true,
       actions: [],
       errors: []
     };
-    
+
     try {
       // Create failure report if requested
       if (createFailureReport) {
@@ -920,18 +942,18 @@ export class RestorationProcessor {
           })),
           cleanupGuidance: result.cleanupGuidance || []
         };
-        
+
         await FSUtils.writeFile(reportPath, JSON.stringify(report, null, 2));
         cleanupResult.actions.push(`Created failure report: ${reportPath}`);
         this.logger.info(`📋 Created restoration failure report: ${reportPath}`);
       }
-      
+
       // Remove partially restored files if requested
       if (removePartialFiles) {
         const partialFiles = result.actionResults
           .filter(r => r.success && (r.type === 'restore-file' || r.type === 'recreate-file'))
           .map(r => r.path);
-          
+
         for (const filePath of partialFiles) {
           try {
             if (await FSUtils.exists(filePath)) {
@@ -944,12 +966,12 @@ export class RestorationProcessor {
           }
         }
       }
-      
+
     } catch (error) {
       cleanupResult.success = false;
       cleanupResult.errors.push(`Cleanup failed: ${error.message}`);
     }
-    
+
     return cleanupResult;
   }
 }

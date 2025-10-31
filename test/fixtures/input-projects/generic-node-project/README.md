@@ -1,4 +1,4 @@
-# {{NAME}}
+# {{README_TITLE}}
 
 A generic Node.js application for my-node-app project.
 

@@ -1,6 +1,6 @@
 /**
  * Undo Log Integration Tests
- * 
+ *
  * Tests for the integration of undo log generation with the conversion engine.
  */
 
@@ -8,33 +8,34 @@ import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
 import { writeFile, mkdir, rm, readFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { ConversionEngine } from '../../src/lib/engine.js';
 
 describe('Undo Log Integration', () => {
   let conversionEngine;
   let testDir;
+  let originalCwd;
 
   beforeEach(async () => {
     conversionEngine = new ConversionEngine();
-    testDir = join(process.cwd(), 'test-temp-integration');
-    
+    originalCwd = process.cwd();
+
+    // Use OS temp dir to avoid creating test-temp directories in the repo
+    testDir = join(tmpdir(), `make-template-test-${Date.now()}`);
+
     // Create test directory
-    try {
-      await mkdir(testDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist
-    }
-    
+    await mkdir(testDir, { recursive: true });
+
     // Change to test directory
     process.chdir(testDir);
-    
+
     // Create basic project structure
     await writeFile('package.json', JSON.stringify({
       name: 'test-project',
       version: '1.0.0',
       description: 'A test project'
     }, null, 2));
-    
+
     await writeFile('README.md', '# Test Project\n\nThis is a test project.');
     await writeFile('.env', 'DATABASE_URL=postgres://localhost/test');
     await writeFile('package-lock.json', '{"lockfileVersion": 2}');
@@ -42,8 +43,8 @@ describe('Undo Log Integration', () => {
 
   afterEach(async () => {
     // Change back to original directory
-    process.chdir(join(testDir, '..'));
-    
+    try { process.chdir(originalCwd); } catch (e) { }
+
     // Clean up test directory
     try {
       await rm(testDir, { recursive: true, force: true });
@@ -110,7 +111,7 @@ describe('Undo Log Integration', () => {
       assert.ok(modifyOperation.originalContent.includes('test-project'));
 
       assert.strictEqual(deleteOperations.length, 2, 'Should have two delete operations');
-      
+
       assert.ok(createOperation, 'Should have create operation');
       assert.strictEqual(createOperation.path, 'template.json');
     });
@@ -149,7 +150,7 @@ describe('Undo Log Integration', () => {
 
       assert.strictEqual(undoLog.sanitized, true);
       assert.ok(undoLog.sanitizationMap);
-      
+
       // Check that sensitive data was sanitized
       const modifyOperation = undoLog.fileOperations.find(op => op.type === 'modified');
       assert.ok(modifyOperation.originalContent.includes('{{SANITIZED_VALUE}}'));
@@ -225,9 +226,9 @@ describe('Undo Log Integration', () => {
       const undoLog = JSON.parse(undoLogContent);
 
       const templateOperations = undoLog.fileOperations.filter(op => op.type === 'created');
-      
+
       assert.strictEqual(templateOperations.length, 2);
-      
+
       for (const operation of templateOperations) {
         assert.strictEqual(operation.category, 'templateFiles');
         assert.strictEqual(operation.restorationAction, 'preserve');

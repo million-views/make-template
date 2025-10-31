@@ -1,0 +1,29 @@
+ℹ️ ✅ package.json validated successfully
+ℹ️ ✅ Required files validation passed
+ℹ️ ✅ package.json src/ README.md found
+ℹ️ ✅ Error handling for filesystem operations included
+ℹ️ ✅ Try-catch blocks implemented for all operations
+ℹ️ ✅ Dependency validation included
+ℹ️ ✅ Concurrent access protection enabled
+ℹ️ ✅ File locking mechanisms implemented
+ℹ️ ✅ Path sanitization enabled
+ℹ️ ✅ Directory write permissions validated
+ℹ️ ✅ Permission checks included
+ℹ️ ✅ Traversal protection enabled
+ℹ️ ✅ Path sanitization and traversal protection enabled
+ℹ️ ✅ locked files handling
+ℹ️ ✅ filesystem capacity check
+ℹ️ ✅ Project located in a reasonable project directory
+ℹ️ ✅ Project structure validated
+ℹ️ ✅ Disk space validation included
+ℹ️ ✅ File locking detection enabled
+ℹ️ ⚠️ Validation warnings (non-critical) detected
+ℹ️ 🔄 Proceeding with caution
+ℹ️ Analyzing project structure and type...
+ℹ️ Using forced project type: vite-react (overriding detection)
+ℹ️ Detected project type: vite-react
+ℹ️ Vite project detected
+ℹ️ Try --help for usage information
+ℹ️ Check project type spelling
+ℹ️ Try --help for usage information
+ℹ️ Check project type spelling

@@ -1,6 +1,6 @@
 /**
  * Undo Log Manager Unit Tests
- * 
+ *
  * Tests for the undo log creation, reading, and validation functionality.
  */
 
@@ -13,26 +13,21 @@ import { UndoLogManager } from '../../src/lib/restoration/undo-log-manager.js';
 describe('UndoLogManager', () => {
   let undoLogManager;
   let testDir;
+  let originalCwd;
 
   beforeEach(async () => {
     undoLogManager = new UndoLogManager();
-    testDir = join(process.cwd(), 'test-temp-undo-log');
-    
-    // Create test directory
-    try {
-      await mkdir(testDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist
-    }
-    
-    // Change to test directory
+    // create a unique temporary directory for this test
+    const { mkdtemp } = await import('node:fs/promises');
+    const { tmpdir } = await import('node:os');
+    testDir = await mkdtemp(join(tmpdir(), 'undo-log-'));
+    originalCwd = process.cwd();
     process.chdir(testDir);
   });
 
   afterEach(async () => {
-    // Change back to original directory
-    process.chdir(join(testDir, '..'));
-    
+    // Restore original cwd before cleanup
+    try { process.chdir(originalCwd); } catch (e) { }
     // Clean up test directory
     try {
       await rm(testDir, { recursive: true, force: true });
@@ -195,7 +190,7 @@ describe('UndoLogManager', () => {
       await writeFile('.template-undo.json', JSON.stringify(validUndoLog, null, 2));
 
       const readUndoLog = await undoLogManager.readUndoLog();
-      
+
       assert.strictEqual(readUndoLog.version, '1.0.0');
       assert.strictEqual(readUndoLog.metadata.projectType, 'generic');
       assert.strictEqual(readUndoLog.originalValues['{{PROJECT_NAME}}'], 'test-project');
@@ -399,7 +394,7 @@ describe('UndoLogManager', () => {
   describe('sanitizeValue', () => {
     it('should sanitize individual values correctly', () => {
       const sanitizationMap = {};
-      
+
       const email = 'test@example.com';
       const sanitizedEmail = undoLogManager.sanitizeValue(email, sanitizationMap);
       assert.strictEqual(sanitizedEmail, '{{SANITIZED_VALUE}}');

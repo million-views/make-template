@@ -3,11 +3,15 @@
   "metadata": {
     "makeTemplateVersion": "1.0.0",
     "projectType": "generic",
-    "timestamp": "2025-10-30T06:19:33.258Z",
+    "timestamp": "2025-10-31T03:55:02.061Z",
     "placeholderFormat": "{{NAME}}"
   },
   "originalValues": {
-    "{{NAME}}": "{{NAME}}"
+    "{{PROJECT_NAME}}": "my-node-app",
+    "{{PROJECT_DESCRIPTION}}": "A generic Node.js application for my-node-app project.",
+    "{{AUTHOR}}": "Test Author",
+    "{{REPOSITORY_URL}}": "https://github.com/testuser/my-node-app.git",
+    "{{README_TITLE}}": "{{README_TITLE}}"
   },
   "fileOperations": [
     {
@@ -20,35 +24,35 @@
       "fileSize": 469,
       "placeholderReplacements": [
         {
-          "from": "{{NAME}}",
-          "to": "{{NAME}}"
+          "from": "my-node-app",
+          "to": "{{PROJECT_NAME}}"
         },
         {
-          "from": "{{NAME}}",
-          "to": "{{NAME}}"
+          "from": "A generic Node.js application for my-node-app project.",
+          "to": "{{PROJECT_DESCRIPTION}}"
         },
         {
-          "from": "{{NAME}}",
-          "to": "{{NAME}}"
+          "from": "Test Author",
+          "to": "{{AUTHOR}}"
         },
         {
-          "from": "{{NAME}}",
-          "to": "{{NAME}}"
+          "from": "https://github.com/testuser/my-node-app.git",
+          "to": "{{REPOSITORY_URL}}"
         }
       ]
     },
     {
       "type": "modified",
       "path": "README.md",
-      "originalContent": "# {{NAME}}\n\nA generic Node.js application for my-node-app project.\n\n## Setup\n\n1. Install dependencies: `npm install`\n2. Start the server: `npm start`\n3. For development: `npm run dev`\n\n## API Endpoints\n\n- `GET /` - Welcome message\n- `GET /health` - Health check endpoint\n\n## Author\n\nCreated by Test Author.\n\n## Repository\n\nhttps://github.com/testuser/my-node-app.git",
+      "originalContent": "# {{README_TITLE}}\n\nA generic Node.js application for my-node-app project.\n\n## Setup\n\n1. Install dependencies: `npm install`\n2. Start the server: `npm start`\n3. For development: `npm run dev`\n\n## API Endpoints\n\n- `GET /` - Welcome message\n- `GET /health` - Health check endpoint\n\n## Author\n\nCreated by Test Author.\n\n## Repository\n\nhttps://github.com/testuser/my-node-app.git",
       "backupPath": null,
       "restorationAction": "restore-content",
       "category": "modified",
-      "fileSize": 366,
+      "fileSize": 374,
       "placeholderReplacements": [
         {
-          "from": "{{NAME}}",
-          "to": "{{NAME}}"
+          "from": "{{README_TITLE}}",
+          "to": "{{README_TITLE}}"
         }
       ]
     },
@@ -59,7 +63,7 @@
       "backupPath": null,
       "restorationAction": "preserve",
       "category": "templateFiles",
-      "fileSize": 1766
+      "fileSize": 2280
     },
     {
       "type": "created",
@@ -68,7 +72,7 @@
       "backupPath": null,
       "restorationAction": "preserve",
       "category": "templateFiles",
-      "fileSize": 1238
+      "fileSize": 1281
     }
   ],
   "sanitized": false,

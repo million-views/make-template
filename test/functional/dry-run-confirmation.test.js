@@ -151,7 +151,7 @@ describe('Dry-Run and Confirmation Tests', () => {
         const read = await readFileAsText(setupPath);
         assert.ok(read.ok, '_setup.mjs should be readable');
         assert.match(read.content, /export\s+default\s+async\s+function\s+setup/i, 'Should show setup function in fixture _setup.mjs');
-        const warnings = detectTopLevelSideEffects(read.content);
+        const warnings = detectTopLevelSideEffects(read.content) || [];
         // Some fixtures may use top-level await or other constructs that
         // produce non-fatal warnings. Don't fail the test for warnings;
         // surface them only for debugging.

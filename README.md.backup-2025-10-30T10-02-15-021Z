@@ -73,7 +73,7 @@ npx {{README_TITLE}} --placeholder-format "__NAME__"
 
 ### Supported Project Types
 - `cf-d1` - Cloudflare Workers with D1 database
-- `cf-turso` - Cloudflare Workers with Turso database
+- `cf-turso` - Cloudflare Workers with Turso database  
 - `vite-react` - Vite-based React applications
 - `generic` - Generic Node.js projects (fallback)
 
@@ -151,7 +151,7 @@ echo ".template-undo.json" >> .gitignore
 
 **Undo Log Best Practices:**
 - ✅ Safe to commit for template maintenance
-- ✅ create-scaffold ignores .template-undo.json automatically
+- ✅ create-scaffold ignores .template-undo.json automatically  
 - ✅ Use `--sanitize-undo` to remove sensitive information
 - ✅ Keep for template development, gitignore for public templates
 - ✅ Use `.restore-defaults.json` for automated restoration
@@ -297,7 +297,7 @@ npm test
 
 # Run specific test categories
 npm run test:unit        # Unit tests
-npm run test:integration # Integration tests
+npm run test:integration # Integration tests  
 npm run test:functional  # End-to-end CLI tests
 
 # Development mode
@@ -305,23 +305,6 @@ npm run dev -- --dry-run
 
 # Validate before publishing
 npm run validate
-
-## Testing
-
-Run the project's test suite locally and in CI. The test harness uses a guard to avoid accidental execution against real projects; set the required environment variable when running tests locally.
-
-Local (recommended):
-```bash
-# Required when running tests locally
-export MAKE_TEMPLATE_TEST_INPUT=1
-npm test
-```
-
-Notes for CI:
-- The repository includes a GitHub Actions workflow at `.github/workflows/ci.yml` which sets `MAKE_TEMPLATE_TEST_INPUT=1` before running `npm test`.
-- This ensures CI runs match the guarded test environment used locally.
-
-If you need ad-hoc debug artifacts during deep troubleshooting, ask explicitly and we can add a gated debug writer that writes to `test-output/` only when a debug flag is enabled.
 ```
 
 ## Publishing

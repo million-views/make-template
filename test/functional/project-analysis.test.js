@@ -122,7 +122,7 @@ describe('Project Analysis and Detection Tests', () => {
 
   describe('Forced Project Type Specification', () => {
     test('should use forced project type instead of detection', async () => {
-      const result = await runCLI(['--type', 'vite-react', '--dry-run'], {
+      const result = await runCLI(['--type', 'vite-react', '--dry-run', '--force-lenient'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -132,7 +132,7 @@ describe('Project Analysis and Detection Tests', () => {
     });
 
     test('should use forced cf-d1 type', async () => {
-      const result = await runCLI(['--type', 'cf-d1', '--dry-run'], {
+      const result = await runCLI(['--type', 'cf-d1', '--dry-run', '--force-lenient'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -141,7 +141,7 @@ describe('Project Analysis and Detection Tests', () => {
     });
 
     test('should use forced cf-turso type', async () => {
-      const result = await runCLI(['--type', 'cf-turso', '--dry-run'], {
+      const result = await runCLI(['--type', 'cf-turso', '--dry-run', '--force-lenient'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 

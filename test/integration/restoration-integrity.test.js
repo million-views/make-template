@@ -237,8 +237,8 @@ describe('Restoration Integrity Tests', () => {
           assert.ok(read.ok, `Should be able to read ${file} as text`);
 
           // Warn if there are suspicious top-level side-effects (npm install, child_process, execSync, spawn, etc.)
-          const suspicious = detectTopLevelSideEffects(read.content);
-          assert.ok(!suspicious, `${file} should not contain top-level side-effects`);
+          const suspicious = detectTopLevelSideEffects(read.content) || [];
+          assert.ok(!suspicious || suspicious.length === 0, `${file} should not contain top-level side-effects`);
 
           // Also check for the expected setup export if applicable
           const hasSetup = hasSetupExport(read.content);

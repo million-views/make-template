@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "makeTemplateVersion": "1.0.0",
+    "projectType": "generic",
+    "timestamp": "2025-10-30T10:02:14.897Z",
+    "placeholderFormat": "{{NAME}}"
+  },
+  "originalValues": {
+    "{{PROJECT_NAME}}": "make-template",
+    "{{PROJECT_DESCRIPTION}}": "Convert existing Node.js projects into reusable templates compatible with @m5nv/create-scaffold",
+    "{{AUTHOR}}": "{{AUTHOR}}",
+    "{{REPOSITORY_URL}}": "https://github.com/m5nv/make-template.git",
+    "{{README_TITLE}}": "{{README_TITLE}}"
+  },
+  "fileOperations": [
+    {
+      "type": "modified",
+      "path": "package.json",
+      "originalContent": "{\n  \"name\": \"{{PROJECT_NAME}}\",\n  \"version\": \"1.0.0\",\n  \"description\": \"{{PROJECT_DESCRIPTION}}\",\n  \"type\": \"module\",\n  \"bin\": {\n    \"make-template\": \"./src/bin/cli.js\"\n  },\n  \"main\": \"./src/lib/engine.js\",\n  \"engines\": {\n    \"node\": \">=18.0.0\"\n  },\n  \"scripts\": {\n    \"test\": \"node --test test/**/*.test.js\",\n    \"test:unit\": \"node --test test/unit/**/*.test.js\",\n    \"test:integration\": \"node --test test/integration/**/*.test.js\",\n    \"test:functional\": \"node --test test/functional/**/*.test.js\",\n    \"test:all\": \"npm run test:unit && npm run test:integration && npm run test:functional\",\n    \"dev\": \"node src/bin/cli.js\",\n    \"validate\": \"npm run test:all\",\n    \"prepack\": \"npm run validate\",\n    \"prepublishOnly\": \"npm run validate\",\n    \"publish:dry\": \"npm publish --dry-run\",\n    \"publish:beta\": \"npm publish --tag beta\",\n    \"publish:latest\": \"npm publish --tag latest\"\n  },\n  \"keywords\": [\n    \"cli\",\n    \"template\",\n    \"scaffold\",\n    \"project-generator\",\n    \"nodejs\"\n  ],\n  \"author\": \"{{AUTHOR}}\",\n  \"license\": \"MIT\",\n  \"files\": [\n    \"src/\",\n    \"README.md\",\n    \"LICENSE\"\n  ],\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"{{REPOSITORY_URL}}\"\n  },\n  \"bugs\": {\n    \"url\": \"https://github.com/m5nv/make-template/issues\"\n  },\n  \"homepage\": \"https://github.com/m5nv/make-template#readme\",\n  \"devDependencies\": {\n    \"express\": \"^4.18.2\",\n    \"vite\": \"^4.5.0\",\n    \"react\": \"^18.2.0\",\n    \"react-dom\": \"^18.2.0\",\n    \"@vitejs/plugin-react\": \"^4.1.1\",\n    \"vitest\": \"^0.34.6\",\n    \"wrangler\": \"^3.15.0\",\n    \"@libsql/client\": \"^0.3.6\",\n    \"nodemon\": \"^3.0.1\"\n  }\n}",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 1578,
+      "placeholderReplacements": [
+        {
+          "from": "make-template",
+          "to": "{{PROJECT_NAME}}"
+        },
+        {
+          "from": "Convert existing Node.js projects into reusable templates compatible with @m5nv/create-scaffold",
+          "to": "{{PROJECT_DESCRIPTION}}"
+        },
+        {
+          "from": "{{AUTHOR}}",
+          "to": "{{AUTHOR}}"
+        },
+        {
+          "from": "https://github.com/m5nv/make-template.git",
+          "to": "{{REPOSITORY_URL}}"
+        }
+      ]
+    },
+    {
+      "type": "modified",
+      "path": "README.md",
+      "originalContent": "# {{README_TITLE}}\nConvert existing Node.js projects into reusable templates compatible with @m5nv/create-scaffold\n\n## Quick Start\n```bash\n# One-time usage (recommended)\nnpx {{README_TITLE}}\n\n# Or install globally\nnpm install -g {{README_TITLE}}\nmake-template\n\n# Preview changes first\nnpx {{README_TITLE}} --dry-run\n```\n\n## Key Features\n- ✅ **Zero dependencies** - Pure Node.js implementation for maximum security\n- ✅ **Smart project detection** - Automatically identifies Cloudflare Workers, Vite, and Node.js projects\n- ✅ **Safe placeholder replacement** - Converts project-specific values to template placeholders\n- ✅ **Intelligent cleanup** - Removes build artifacts while preserving essential source code\n- ✅ **Template restoration** - Reverse conversion to restore working project state for development\n- ✅ **Create-scaffold ready** - Generates _setup.mjs and template.json for seamless integration\n\n## Usage Examples\n\n### Basic Conversion\n```bash\n# Convert current directory to template\nnpx {{README_TITLE}}\n\n# Expected output:\n✅ Detected project type: vite-react\n✅ Found 3 placeholders: PROJECT_NAME, PROJECT_DESCRIPTION, HTML_TITLE\n✅ Generated _setup.mjs and template.json\n✅ Template conversion complete!\n```\n\n### Preview Mode\n```bash\n# See what changes will be made\nnpx {{README_TITLE}} --dry-run\n\n# Shows planned changes without executing:\n📋 Planned Changes:\n  📝 package.json: \"my-app\" → \"{{PROJECT_NAME}}\"\n  📝 index.html: \"My App\" → \"{{HTML_TITLE}}\"\n  🗑️ Remove: node_modules, .git, dist/\n  📄 Create: _setup.mjs, template.json\n```\n\n### Advanced Options\n```bash\n# Skip confirmation prompts\nnpx {{README_TITLE}} --yes\n\n# Force specific project type\nnpx {{README_TITLE}} --type cf-d1\n\n# Use custom placeholder format\nnpx {{README_TITLE}} --placeholder-format \"__NAME__\"\n```\n\n## CLI Options\n\n| Option | Description | Example |\n|--------|-------------|---------|\n| `--dry-run` | Preview changes without executing | `--dry-run` |\n| `--yes` | Skip confirmation prompts | `--yes` |\n| `--type <type>` | Force project type detection | `--type vite-react` |\n| `--placeholder-format <format>` | Custom placeholder format | `--placeholder-format \"%NAME%\"` |\n| `--help` | Show usage information | `--help` |\n\n### Supported Project Types\n- `cf-d1` - Cloudflare Workers with D1 database\n- `cf-turso` - Cloudflare Workers with Turso database  \n- `vite-react` - Vite-based React applications\n- `generic` - Generic Node.js projects (fallback)\n\n## Template Restoration\n\nThe restoration feature allows template authors to reverse template conversion, returning a templatized project back to a working state. This enables efficient template development and testing workflows.\n\n### Restoration Options\n\n| Option | Description | Example |\n|--------|-------------|---------|\n| `--restore` | Restore template to working project | `--restore` |\n| `--restore-files <files>` | Restore only specific files | `--restore-files \"package.json,README.md\"` |\n| `--restore-placeholders` | Restore only placeholder values | `--restore-placeholders` |\n| `--sanitize-undo` | Remove sensitive data from undo log | `--sanitize-undo` |\n| `--generate-defaults` | Create restoration defaults file | `--generate-defaults` |\n\n### Template Author Workflow\n\n```bash\n# 1. Convert working project to template\nnpx {{README_TITLE}}\n\n# 2. Test template with create-scaffold\nnpx @m5nv/create-scaffold my-template test-project\n\n# 3. Find issues, restore to working state\nnpx {{README_TITLE}} --restore\n\n# 4. Fix issues in working project\n# Edit files, test functionality\n\n# 5. Update template with fixes\nnpx {{README_TITLE}}\n```\n\n### Restoration Examples\n\n```bash\n# Preview restoration changes\nnpx {{README_TITLE}} --restore --dry-run\n\n# Full restoration (restore everything)\nnpx {{README_TITLE}} --restore\n\n# Selective file restoration\nnpx {{README_TITLE}} --restore-files \"package.json,wrangler.jsonc\"\n\n# Restore only placeholder values\nnpx {{README_TITLE}} --restore-placeholders\n\n# Generate defaults for automated restoration\nnpx {{README_TITLE}} --generate-defaults\n```\n\n### Undo Log Management\n\nThe `.template-undo.json` file contains restoration data for template authors:\n\n**For Template Development:**\n```bash\n# Keep undo log for development workflow\ngit add .template-undo.json\ngit commit -m \"Add template with restoration data\"\n```\n\n**For Public Templates:**\n```bash\n# Use sanitized undo log for privacy\nnpx {{README_TITLE}} --sanitize-undo\n\n# Or exclude from repository\necho \".template-undo.json\" >> .gitignore\n```\n\n**Undo Log Best Practices:**\n- ✅ Safe to commit for template maintenance\n- ✅ create-scaffold ignores .template-undo.json automatically  \n- ✅ Use `--sanitize-undo` to remove sensitive information\n- ✅ Keep for template development, gitignore for public templates\n- ✅ Use `.restore-defaults.json` for automated restoration\n\n### Sanitization and Privacy\n\nProtect sensitive information when sharing templates:\n\n```bash\n# Create template with sanitized undo log\nnpx {{README_TITLE}} --sanitize-undo --dry-run\n\n# Generate defaults file for restoration\nnpx {{README_TITLE}} --generate-defaults\n\n# Edit .restore-defaults.json with safe defaults\n{\n  \"defaults\": {\n    \"{{PROJECT_NAME}}\": \"${PWD##*/}\",\n    \"{{AUTHOR_NAME}}\": \"${USER}\",\n    \"{{AUTHOR_EMAIL}}\": \"dev@example.com\"\n  }\n}\n\n# Restore using defaults (no prompts)\nnpx {{README_TITLE}} --restore\n```\n\n**Sanitization removes:**\n- Email addresses and personal identifiers\n- File paths containing usernames\n- API keys and sensitive configuration values\n- Author names and personal information\n\n**Sanitization preserves:**\n- File operation records\n- Placeholder mapping structure\n- Template functionality\n- Restoration capability\n\n### Troubleshooting Restoration\n\n**Undo log not found:**\n```bash\n# Solution: Create template first\nnpx {{README_TITLE}}\n```\n\n**Missing values during restoration:**\n```bash\n# Solution: Create defaults file\nnpx {{README_TITLE}} --generate-defaults\n\n# Edit .restore-defaults.json with your values\n# Then restore\nnpx {{README_TITLE}} --restore\n```\n\n**File conflicts during restoration:**\n```bash\n# Solution: Preview first, then selective restore\nnpx {{README_TITLE}} --restore --dry-run\nnpx {{README_TITLE}} --restore-files \"package.json\"\n```\n\n**Sanitized restoration prompts:**\n```bash\n# Solution: Use defaults or placeholder-only restore\nnpx {{README_TITLE}} --restore-placeholders\n```\n\n## Installation\n\n### NPX (Recommended)\n```bash\n# Run once without installation\nnpx {{README_TITLE}}\n```\n\n### Global Installation\n```bash\n# Install globally for repeated use\nnpm install -g {{README_TITLE}}\nmake-template\n```\n\n### Requirements\n- Node.js 18+ (ESM support required)\n- Project must have package.json file\n- Git repository (optional, will be cleaned up)\n\n## How It Works\n\n1. **Analyzes** your project structure and detects project type\n2. **Identifies** project-specific values in configuration files\n3. **Replaces** values with placeholders ({{PROJECT_NAME}}, etc.)\n4. **Cleans up** build artifacts, dependencies, and version control\n5. **Generates** _setup.mjs and template.json for create-scaffold compatibility\n\n## Generated Files\n\n### _setup.mjs\n```javascript\nexport default async function setup({ ctx, tools }) {\n  await tools.placeholders.replaceAll({\n    PROJECT_NAME: ctx.projectName,\n    PROJECT_DESCRIPTION: ctx.projectDescription || ctx.projectName\n  }, ['package.json', 'README.md']);\n}\n```\n\n### template.json\n```json\n{\n  \"name\": \"My Template\",\n  \"setup\": { \"supportedOptions\": [] },\n  \"metadata\": {\n    \"type\": \"vite-react\",\n    \"placeholders\": [\n      { \"name\": \"{{PROJECT_NAME}}\", \"required\": true }\n    ]\n  }\n}\n```\n\n## Safety Features\n\n- **Dry run mode** - Preview all changes before execution\n- **Confirmation prompts** - Explicit approval for destructive operations\n- **Essential file preservation** - Never removes source code or configurations\n- **Path validation** - Prevents operations outside project directory\n\n## Development\n\n```bash\n# Clone and install\ngit clone https://github.com/m5nv/make-template.git\ncd make-template\nnpm install\n\n# Run comprehensive test suite\nnpm test\n\n# Run specific test categories\nnpm run test:unit        # Unit tests\nnpm run test:integration # Integration tests  \nnpm run test:functional  # End-to-end CLI tests\n\n# Development mode\nnpm run dev -- --dry-run\n\n# Validate before publishing\nnpm run validate\n```\n\n## Publishing\n\n```bash\n# Test package before publishing\nnpm run publish:dry\n\n# Publish beta version\nnpm run publish:beta\n\n# Publish stable release\nnpm run publish:latest\n```\n\n## License\n\nMIT",
+      "backupPath": null,
+      "restorationAction": "restore-content",
+      "category": "modified",
+      "fileSize": 8513,
+      "placeholderReplacements": [
+        {
+          "from": "{{README_TITLE}}",
+          "to": "{{README_TITLE}}"
+        }
+      ]
+    },
+    {
+      "type": "deleted",
+      "path": "node_modules",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "regenerate",
+      "category": "generated",
+      "fileSize": 0,
+      "regenerationCommand": "npm install"
+    },
+    {
+      "type": "deleted",
+      "path": "package-lock.json",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "regenerate",
+      "category": "generated",
+      "fileSize": 165547,
+      "regenerationCommand": "npm install"
+    },
+    {
+      "type": "created",
+      "path": "_setup.mjs",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles",
+      "fileSize": 2280
+    },
+    {
+      "type": "created",
+      "path": "template.json",
+      "originalContent": null,
+      "backupPath": null,
+      "restorationAction": "preserve",
+      "category": "templateFiles",
+      "fileSize": 1281
+    }
+  ],
+  "sanitized": false,
+  "sanitizationMap": {}
+}

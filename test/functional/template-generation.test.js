@@ -134,15 +134,15 @@ describe('Template Generation Tests', () => {
         const read = await readFileAsText(fixtureSetupPath);
         assert.ok(read.ok, '_setup.mjs should be readable');
         assert.match(read.content, /export\s+default\s+async\s+function\s+setup\s*\(\s*\{\s*ctx\s*,\s*tools\s*\}\s*\)/i, 'Should use correct Environment destructuring in fixture _setup.mjs');
-        const suspicious = detectTopLevelSideEffects(read.content);
+        const suspicious = detectTopLevelSideEffects(read.content) || [];
         // If the fixture _setup.mjs contains suspicious top-level code (top-level await,
         // child_process, npm install strings, etc.), the CLI should warn in the dry-run
         // preview instead of the test attempting to execute it. Accept either no
         // suspicious code or a visible warning in the CLI output.
-        if (suspicious) {
+        if (suspicious && suspicious.length > 0) {
           assert.match(result.stdout, /Top[- ]level await|may perform runtime actions|top[- ]level await detected|warning/i, 'When _setup.mjs appears suspicious, CLI should flag a warning');
         } else {
-          assert.ok(!suspicious, '_setup.mjs should not contain top-level side-effects');
+          assert.ok(suspicious.length === 0, '_setup.mjs should not contain top-level side-effects');
         }
       } else {
         // Fallback: assert CLI reports that _setup.mjs will be created

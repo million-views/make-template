@@ -1,0 +1,1 @@
+❌ vite.config.js not found. Required Vite configuration missing for vite-react project: vite.config.js (or vite.config.ts) is required.

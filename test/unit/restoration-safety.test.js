@@ -1,10 +1,11 @@
 /**
  * Restoration Safety Features Tests
- * 
+ *
  * Tests for file conflict detection, backup options, and rollback functionality.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import assert from 'node:assert';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { RestorationProcessor } from '../../src/lib/processors/restoration-processor.js';
@@ -13,16 +14,30 @@ import { FSUtils } from '../../src/lib/utils/fs-utils.js';
 describe('RestorationProcessor Safety Features', () => {
   let processor;
   let testDir;
+  let originalCwd;
 
   beforeEach(async () => {
     processor = new RestorationProcessor();
-    testDir = join(process.cwd(), 'test-temp-safety');
+    // During unit tests, reduce logger verbosity to avoid sending large
+    // or structured objects through console which can interfere with the
+    // test runner's IPC serialization. Keep errors visible.
+    try {
+      if (processor && processor.logger && typeof processor.logger.setLevel === 'function') {
+        processor.logger.setLevel('error');
+      }
+    } catch (e) {
+      // ignore
+    }
+    const { mkdtemp } = await import('node:fs/promises');
+    const { tmpdir } = await import('node:os');
+    testDir = await mkdtemp(join(tmpdir(), 'safety-'));
+    originalCwd = process.cwd();
     await FSUtils.ensureDir(testDir);
     process.chdir(testDir);
   });
 
   afterEach(async () => {
-    process.chdir(join(testDir, '..'));
+    try { process.chdir(originalCwd); } catch (e) { }
     await FSUtils.remove(testDir);
   });
 
@@ -31,7 +46,7 @@ describe('RestorationProcessor Safety Features', () => {
       // Create existing files that would conflict
       await FSUtils.writeFileAtomic('existing.txt', 'existing content');
       await FSUtils.writeFileAtomic('another.txt', 'another content');
-      
+
       const plan = {
         mode: 'full',
         actions: [
@@ -57,22 +72,18 @@ describe('RestorationProcessor Safety Features', () => {
 
       const conflicts = await processor.detectConflicts(plan);
 
-      expect(conflicts).toHaveLength(2);
-      expect(conflicts[0]).toMatchObject({
-        type: 'file-exists',
-        path: 'existing.txt',
-        action: 'recreate-file'
-      });
-      expect(conflicts[1]).toMatchObject({
-        type: 'file-exists',
-        path: 'another.txt',
-        action: 'recreate-file'
-      });
+      assert.strictEqual(conflicts.length, 2);
+      assert.strictEqual(conflicts[0].type, 'file-exists');
+      assert.strictEqual(conflicts[0].path, 'existing.txt');
+      assert.strictEqual(conflicts[0].action, 'recreate-file');
+      assert.strictEqual(conflicts[1].type, 'file-exists');
+      assert.strictEqual(conflicts[1].path, 'another.txt');
+      assert.strictEqual(conflicts[1].action, 'recreate-file');
     });
 
     it('should not detect conflicts for restore-file actions', async () => {
       await FSUtils.writeFileAtomic('existing.txt', 'content');
-      
+
       const plan = {
         mode: 'full',
         actions: [
@@ -87,7 +98,7 @@ describe('RestorationProcessor Safety Features', () => {
       };
 
       const conflicts = await processor.detectConflicts(plan);
-      expect(conflicts).toHaveLength(0);
+      assert.strictEqual(conflicts.length, 0);
     });
 
     it('should handle empty plans', async () => {
@@ -99,7 +110,7 @@ describe('RestorationProcessor Safety Features', () => {
       };
 
       const conflicts = await processor.detectConflicts(plan);
-      expect(conflicts).toHaveLength(0);
+      assert.strictEqual(conflicts.length, 0);
     });
   });
 
@@ -108,35 +119,35 @@ describe('RestorationProcessor Safety Features', () => {
       // Create test files
       await FSUtils.writeFileAtomic('file1.txt', 'content1');
       await FSUtils.writeFileAtomic('file2.txt', 'content2');
-      
+
       const filePaths = ['file1.txt', 'file2.txt', 'nonexistent.txt'];
       const backupResult = await processor.createBackups(filePaths);
 
-      expect(backupResult.backups).toHaveLength(2);
-      expect(backupResult.timestamp).toBeDefined();
-      
+      assert.strictEqual(backupResult.backups.length, 2);
+      assert.ok(backupResult.timestamp);
+
       // Check backup files exist
       for (const backup of backupResult.backups) {
-        expect(await FSUtils.exists(backup.backup)).toBe(true);
+        assert.strictEqual(await FSUtils.exists(backup.backup), true);
         const backupContent = await FSUtils.readFile(backup.backup);
         const originalContent = await FSUtils.readFile(backup.original);
-        expect(backupContent).toBe(originalContent);
+        assert.strictEqual(backupContent, originalContent);
       }
     });
 
     it('should handle empty file list', async () => {
       const backupResult = await processor.createBackups([]);
-      
-      expect(backupResult.backups).toHaveLength(0);
-      expect(backupResult.timestamp).toBeDefined();
+
+      assert.strictEqual(backupResult.backups.length, 0);
+      assert.ok(backupResult.timestamp);
     });
 
     it('should skip non-existent files gracefully', async () => {
       const filePaths = ['nonexistent1.txt', 'nonexistent2.txt'];
       const backupResult = await processor.createBackups(filePaths);
 
-      expect(backupResult.backups).toHaveLength(0);
-      expect(backupResult.timestamp).toBeDefined();
+      assert.strictEqual(backupResult.backups.length, 0);
+      assert.ok(backupResult.timestamp);
     });
   });
 
@@ -145,30 +156,30 @@ describe('RestorationProcessor Safety Features', () => {
       // Create original files
       await FSUtils.writeFileAtomic('file1.txt', 'original1');
       await FSUtils.writeFileAtomic('file2.txt', 'original2');
-      
+
       // Create backups
       const backupResult = await processor.createBackups(['file1.txt', 'file2.txt']);
-      
+
       // Modify original files (simulate partial restoration)
       await FSUtils.writeFileAtomic('file1.txt', 'modified1');
       await FSUtils.writeFileAtomic('file2.txt', 'modified2');
-      
+
       // Rollback
       const rollbackResult = await processor.rollbackRestoration({}, backupResult);
-      
-      expect(rollbackResult.success).toBe(true);
-      expect(rollbackResult.restoredFiles).toBe(2);
-      expect(rollbackResult.errors).toHaveLength(0);
-      
+
+      assert.strictEqual(rollbackResult.success, true);
+      assert.strictEqual(rollbackResult.restoredFiles, 2);
+      assert.strictEqual(rollbackResult.errors.length, 0);
+
       // Verify files are restored
       const content1 = await FSUtils.readFile('file1.txt');
       const content2 = await FSUtils.readFile('file2.txt');
-      expect(content1).toBe('original1');
-      expect(content2).toBe('original2');
-      
+      assert.strictEqual(content1, 'original1');
+      assert.strictEqual(content2, 'original2');
+
       // Verify backup files are cleaned up
       for (const backup of backupResult.backups) {
-        expect(await FSUtils.exists(backup.backup)).toBe(false);
+        assert.strictEqual(await FSUtils.exists(backup.backup), false);
       }
     });
 
@@ -181,20 +192,20 @@ describe('RestorationProcessor Safety Features', () => {
         ],
         timestamp: '2024-01-01T00-00-00-000Z'
       };
-      
+
       const rollbackResult = await processor.rollbackRestoration({}, invalidBackups);
-      
-      expect(rollbackResult.success).toBe(false);
-      expect(rollbackResult.restoredFiles).toBe(0);
-      expect(rollbackResult.errors).toHaveLength(2);
+
+      assert.strictEqual(rollbackResult.success, false);
+      assert.strictEqual(rollbackResult.restoredFiles, 0);
+      assert.strictEqual(rollbackResult.errors.length, 2);
     });
 
     it('should handle empty backup data', async () => {
       const rollbackResult = await processor.rollbackRestoration({}, null);
-      
-      expect(rollbackResult.success).toBe(true);
-      expect(rollbackResult.restoredFiles).toBe(0);
-      expect(rollbackResult.errors).toHaveLength(0);
+
+      assert.strictEqual(rollbackResult.success, true);
+      assert.strictEqual(rollbackResult.restoredFiles, 0);
+      assert.strictEqual(rollbackResult.errors.length, 0);
     });
   });
 
@@ -203,7 +214,7 @@ describe('RestorationProcessor Safety Features', () => {
       // Create existing files
       await FSUtils.writeFileAtomic('important.txt', 'important data');
       await FSUtils.writeFileAtomic('config.json', '{"key": "value"}');
-      
+
       // Create a plan that will partially fail
       const plan = {
         mode: 'full',
@@ -231,15 +242,15 @@ describe('RestorationProcessor Safety Features', () => {
       // Execute with safety features
       const result = await processor.executePlanWithSafety(plan, { createBackups: true });
 
-      expect(result.success).toBe(false);
-      expect(result.actionsExecuted).toBe(2); // Two successful actions
-      expect(result.errors).toHaveLength(1);
-      expect(result.backupInfo).toBeDefined();
+      assert.strictEqual(result.success, false);
+      assert.strictEqual(result.actionsExecuted, 2);
+      assert.strictEqual(result.errors.length, 1);
+      assert.ok(result.backupInfo);
     });
 
     it('should execute plan successfully without rollback', async () => {
       await FSUtils.writeFileAtomic('test.txt', 'original');
-      
+
       const plan = {
         mode: 'full',
         actions: [
@@ -255,13 +266,13 @@ describe('RestorationProcessor Safety Features', () => {
 
       const result = await processor.executePlanWithSafety(plan, { createBackups: true });
 
-      expect(result.success).toBe(true);
-      expect(result.actionsExecuted).toBe(1);
-      expect(result.errors).toHaveLength(0);
-      expect(result.backupInfo).toBeDefined();
-      
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.actionsExecuted, 1);
+      assert.strictEqual(result.errors.length, 0);
+      assert.ok(result.backupInfo);
+
       const content = await FSUtils.readFile('test.txt');
-      expect(content).toBe('restored content');
+      assert.strictEqual(content, 'restored content');
     });
   });
 
@@ -281,15 +292,15 @@ describe('RestorationProcessor Safety Features', () => {
       };
 
       const result = await processor.executePlanWithSafety(invalidPlan);
-      
-      expect(result.success).toBe(false);
-      expect(result.errors).toHaveLength(1);
-      expect(result.errors[0]).toContain('Action 0 missing required \'type\' field');
+
+      assert.strictEqual(result.success, false);
+      assert.strictEqual(result.errors.length, 1);
+      assert.ok(result.errors[0].includes("Action 0 missing required 'type' field"));
     });
 
     it('should handle safety options', async () => {
       await FSUtils.writeFileAtomic('test.txt', 'content');
-      
+
       const plan = {
         mode: 'full',
         actions: [
@@ -308,9 +319,9 @@ describe('RestorationProcessor Safety Features', () => {
         detectConflicts: true
       });
 
-      expect(result.success).toBe(true);
-      expect(result.backupInfo).toBeUndefined();
-      expect(result.conflicts).toBeDefined();
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.backupInfo, undefined);
+      assert.ok(result.conflicts);
     });
   });
 
@@ -318,7 +329,7 @@ describe('RestorationProcessor Safety Features', () => {
     it('should provide detailed restoration statistics', async () => {
       await FSUtils.writeFileAtomic('file1.txt', 'content1');
       await FSUtils.writeFileAtomic('file2.txt', 'content2');
-      
+
       const plan = {
         mode: 'full',
         actions: [
@@ -344,14 +355,12 @@ describe('RestorationProcessor Safety Features', () => {
       const result = await processor.executePlan(plan);
       const stats = processor.getRestorationStats(result);
 
-      expect(stats.total).toBe(3);
-      expect(stats.successful).toBe(3);
-      expect(stats.failed).toBe(0);
-      expect(stats.operations).toMatchObject({
-        'restore-content': 1,
-        'recreate-content': 1,
-        'preserve': 1
-      });
+      assert.strictEqual(stats.total, 3);
+      assert.strictEqual(stats.successful, 3);
+      assert.strictEqual(stats.failed, 0);
+      assert.strictEqual(stats.operations['restore-content'], 1);
+      assert.strictEqual(stats.operations['recreate-content'], 1);
+      assert.strictEqual(stats.operations['preserve'], 1);
     });
   });
 });

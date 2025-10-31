@@ -1,6 +1,6 @@
 /**
  * Logging Utilities
- * 
+ *
  * Logging utilities with appropriate verbosity levels.
  * Implements requirement 9.1: Use exit code 0 for successful operations.
  * Implements requirement 9.2: Use exit code 1 for errors and failures.
@@ -25,7 +25,7 @@ export class Logger {
    */
   error(message, ...args) {
     if (this.levels[this.level] >= this.levels.error) {
-      console.error('❌', message, ...args);
+      console.error('❌', message, ...this._serializeArgs(args));
     }
   }
 
@@ -36,7 +36,7 @@ export class Logger {
    */
   warn(message, ...args) {
     if (this.levels[this.level] >= this.levels.warn) {
-      console.warn('⚠️', message, ...args);
+      console.warn('⚠️', message, ...this._serializeArgs(args));
     }
   }
 
@@ -47,7 +47,7 @@ export class Logger {
    */
   info(message, ...args) {
     if (this.levels[this.level] >= this.levels.info) {
-      console.log('ℹ️', message, ...args);
+      console.log('ℹ️', message, ...this._serializeArgs(args));
     }
   }
 
@@ -58,7 +58,7 @@ export class Logger {
    */
   debug(message, ...args) {
     if (this.levels[this.level] >= this.levels.debug) {
-      console.log('🐛', message, ...args);
+      console.log('🐛', message, ...this._serializeArgs(args));
     }
   }
 
@@ -69,7 +69,7 @@ export class Logger {
    */
   success(message, ...args) {
     if (this.levels[this.level] >= this.levels.info) {
-      console.log('✅', message, ...args);
+      console.log('✅', message, ...this._serializeArgs(args));
     }
   }
 
@@ -109,8 +109,8 @@ export class Logger {
    */
   filesystemError(operation, filePath, error) {
     this.error(`Failed to ${operation} file: ${filePath}`);
-    this.error(`Reason: ${error.message}`);
-    
+    this.error(`Reason: ${error && error.message ? error.message : String(error)}`);
+
     // Provide helpful suggestions based on error type
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       this.info('Suggestions:');
@@ -129,6 +129,36 @@ export class Logger {
   }
 
   /**
+   * Safely serialize arguments for logging to avoid passing non-cloneable objects
+   * to the test runner via console.* which can trigger structured-clone errors.
+   * @param {Array} args
+   * @returns {Array}
+   */
+  _serializeArgs(args) {
+    return args.map(a => {
+      if (a === null || a === undefined) return a;
+      const t = typeof a;
+      if (t === 'string' || t === 'number' || t === 'boolean') return a;
+      if (a instanceof Error) {
+        // Include name and message, include stack only in debug level
+        if (this.levels[this.level] >= this.levels.debug) {
+          return `${a.name}: ${a.message}\n${a.stack}`;
+        }
+        return `${a.name}: ${a.message}`;
+      }
+      try {
+        return JSON.parse(JSON.stringify(a));
+      } catch (e) {
+        try {
+          return String(a);
+        } catch (e2) {
+          return '[unserializable]';
+        }
+      }
+    });
+  }
+
+  /**
    * Log missing dependency error with installation instructions
    * @param {string[]} missingDeps - Array of missing dependency names
    * @param {string} packageManager - Package manager to use (npm, yarn, pnpm)
@@ -140,7 +170,7 @@ export class Logger {
 
     this.error(`Missing required dependencies: ${missingDeps.join(', ')}`);
     this.info('Installation instructions:');
-    
+
     const depsString = missingDeps.join(' ');
     switch (packageManager) {
       case 'yarn':
@@ -154,7 +184,7 @@ export class Logger {
         this.info(`  npm install ${depsString}`);
         break;
     }
-    
+
     this.info('Then run the command again.');
   }
 
@@ -208,7 +238,7 @@ export class Logger {
    */
   child(prefix) {
     const childLogger = new Logger(this.level);
-    
+
     // Override all methods to add prefix
     const originalMethods = ['error', 'warn', 'info', 'debug', 'success', 'dryRun', 'confirm'];
     originalMethods.forEach(method => {

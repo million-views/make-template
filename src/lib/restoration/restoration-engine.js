@@ -84,18 +84,21 @@ export class RestorationEngine {
       return { success: true, result };
 
     } catch (error) {
+      // Do not call process.exit here - when invoked in-process (tests)
+      // we want to throw errors so the test harness can catch them and
+      // continue running. Log helpful messages and rethrow.
       if (error instanceof RestorationError) {
         this.logger.error(error.message);
-        if (error.details.suggestions) {
+        if (error.details && error.details.suggestions) {
           error.details.suggestions.forEach(suggestion => {
             this.logger.info(`💡 ${suggestion}`);
           });
         }
-        process.exit(1);
+        throw error;
       } else {
         this.logger.error('Unexpected error during restoration:', error.message);
         this.logger.debug('Stack trace:', error.stack);
-        process.exit(1);
+        throw error;
       }
     }
   }
@@ -357,37 +360,18 @@ export class RestorationEngine {
       });
 
       if (!result.success) {
-        throw new RestorationError(
-          `Restoration failed: ${result.errors.join(', ')}`,
-          ERROR_CODES.PROCESSING_ERROR,
-          {
-            suggestions: [
-              'Check file permissions and ensure files are not locked',
-              'Verify the undo log is complete and not corrupted',
-              'Try running with --dry-run to preview the restoration first'
-            ]
-          }
-        );
+        // Throw a plain Error with a clear message so test harnesses and
+        // worker IPC can serialize the exception without issues.
+        throw new Error(`Restoration failed: ${result.errors.join(', ')}`);
       }
 
       return result;
 
     } catch (error) {
-      if (error instanceof RestorationError) {
-        throw error;
-      }
-
-      throw new RestorationError(
-        `Failed to execute restoration plan: ${error.message}`,
-        ERROR_CODES.PROCESSING_ERROR,
-        {
-          suggestions: [
-            'Check file permissions and disk space',
-            'Ensure no files are locked by other processes',
-            'Try running with --dry-run to preview changes first'
-          ]
-        }
-      );
+      // Re-throw a plain Error to avoid sending complex error objects
+      // across test worker boundaries which can cause serialization
+      // failures in the node:test runner.
+      throw new Error(`Failed to execute restoration plan: ${error.message}`);
     }
   }
 

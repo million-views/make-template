@@ -4,7 +4,7 @@
   "description": "{{PROJECT_DESCRIPTION}}",
   "type": "module",
   "bin": {
-    "make-template": "./src/bin/cli.js"
+    "{{PROJECT_NAME}}": "./src/bin/cli.js"
   },
   "main": "./src/lib/engine.js",
   "engines": {

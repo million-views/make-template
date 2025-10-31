@@ -14,31 +14,31 @@
     "version": "1.0.0",
     "placeholders": [
       {
-        "name": "{{NAME}}",
+        "name": "{{PROJECT_NAME}}",
         "description": "The name of the project",
         "required": true,
         "default": null
       },
       {
-        "name": "{{NAME}}",
+        "name": "{{PROJECT_DESCRIPTION}}",
         "description": "A brief description of the project",
         "required": false,
         "default": null
       },
       {
-        "name": "{{NAME}}",
+        "name": "{{AUTHOR}}",
         "description": "The author or maintainer of the project",
         "required": false,
         "default": null
       },
       {
-        "name": "{{NAME}}",
+        "name": "{{REPOSITORY_URL}}",
         "description": "Value for REPOSITORY_URL",
         "required": false,
         "default": null
       },
       {
-        "name": "{{NAME}}",
+        "name": "{{README_TITLE}}",
         "description": "The title shown in the README file",
         "required": false,
         "default": null
@@ -49,6 +49,6 @@
       "README.md"
     ],
     "createdBy": "@m5nv/make-template",
-    "createdAt": "2025-10-30T06:19:33.251Z"
+    "createdAt": "2025-10-31T03:55:02.053Z"
   }
 }
