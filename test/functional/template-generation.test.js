@@ -2,98 +2,62 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { existsSync, accessSync, constants } from 'node:fs';
 import fs from 'node:fs';
-// Defer importing the CLI until after we install diagnostic hooks below so we
-// can capture any calls to process.exit originating from the CLI or engines.
-let cliMain;
+import { spawn } from 'node:child_process';
 import { join } from 'node:path';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileAsText, detectTopLevelSideEffects, hasSetupExport } from '../../src/lib/utils/fixture-safety.js';
 
-const cliModule = await import('../../src/bin/cli.js');
-cliMain = cliModule.main;
-
-// diagnostics removed
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// using in-process cliMain; no external CLI path needed
+// diagnostics removed
 
 /**
  * Helper function to run CLI command and capture output
  */
-function runCLI(args = [], options = {}) {
-  return (async () => {
-    // Capture console output without replacing process.stdout to avoid
-    // interfering with the node:test reporter internals.
-    const originalConsoleLog = console.log;
-    const originalConsoleError = console.error;
-    const originalConsoleWarn = console.warn;
+async function runCommand(command, args = [], options = {}) {
+  return new Promise((resolve) => {
+    const runArgs = Array.isArray(args) ? [...args] : [];
+    // Do not inject --silent into nested `node --test` invocations
+    if (options.silent !== false && !runArgs.includes('--silent')) {
+      if (!(runArgs[0] === '--test' && command === 'node')) {
+        runArgs.push('--silent');
+      }
+    }
+
+    const child = spawn(command, runArgs, {
+      stdio: 'pipe',
+      ...options
+    });
+
     let stdout = '';
     let stderr = '';
 
-    // Capture console output into strings but do NOT forward to the
-    // real console (avoids polluting the test runner's IPC channel).
-    console.log = (...args) => {
-      const msg = args.map(a => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ');
-      stdout += msg + '\n';
-    };
-    console.error = (...args) => {
-      const msg = args.map(a => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ');
-      stderr += msg + '\n';
-    };
-    console.warn = (...args) => {
-      const msg = args.map(a => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ');
-      stdout += msg + '\n';
-    };
+    child.stdout?.on('data', (data) => {
+      stdout += data.toString();
+    });
 
-    const cwd = options.cwd || process.cwd();
-    const originalCwd = process.cwd();
-    try {
-      process.chdir(cwd);
-      const runArgs = Array.isArray(args) ? [...args] : [];
-      if (options.silent !== false && !runArgs.includes('--silent')) runArgs.push('--silent');
-      // Diagnostic: capture active handles/requests count before running CLI
-      let handlesBefore = 0;
-      let requestsBefore = 0;
-      try {
-        handlesBefore = typeof process._getActiveHandles === 'function' ? process._getActiveHandles().length : 0;
-        requestsBefore = typeof process._getActiveRequests === 'function' ? process._getActiveRequests().length : 0;
-      } catch (e) { }
-      let exitCode = 0;
-      try {
-        await cliMain(runArgs);
-      } catch (err) {
-        // Normalize exitCode: prefer numeric codes, fall back to 1 for strings/unknown
-        const code = err && err.code ? err.code : 1;
-        exitCode = (typeof code === 'number') ? code : 1;
-      }
-      // Diagnostic: capture active handles/requests after running CLI
-      try {
-        const handlesAfter = typeof process._getActiveHandles === 'function' ? process._getActiveHandles().length : 0;
-        const requestsAfter = typeof process._getActiveRequests === 'function' ? process._getActiveRequests().length : 0;
-        if (handlesAfter > handlesBefore || requestsAfter > requestsBefore) {
-          try {
-            console.error('DIAGNOSTIC_ACTIVE_HANDLES: before=', handlesBefore, 'after=', handlesAfter, 'beforeReq=', requestsBefore, 'afterReq=', requestsAfter);
-            // attempt to serialize a few handle types
-            if (typeof process._getActiveHandles === 'function') {
-              const hs = process._getActiveHandles().slice(0, 10).map(h => {
-                try { return h.constructor && h.constructor.name; } catch (e) { return String(h); }
-              });
-              console.error('DIAGNOSTIC_ACTIVE_HANDLE_TYPES:', JSON.stringify(hs));
-            }
-          } catch (e) { }
-        }
-      } catch (e) { }
-      return { code: exitCode, stdout: stdout.trim(), stderr: stderr.trim() };
-    } finally {
-      console.log = originalConsoleLog;
-      console.error = originalConsoleError;
-      console.warn = originalConsoleWarn;
-      try { process.chdir(originalCwd); } catch (e) { }
-    }
-  })();
+    child.stderr?.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('close', (exitCode) => {
+      resolve({
+        code: exitCode,
+        stdout,
+        stderr
+      });
+    });
+
+    child.on('error', (error) => {
+      resolve({
+        exitCode: 1,
+        stdout,
+        stderr: stderr + error.message
+      });
+    });
+  });
 }
 
 /**
@@ -122,7 +86,7 @@ function assertDryRunContains(result, keywords = []) {
 describe('Template Generation Tests', () => {
   describe('_setup.mjs Generation', () => {
     test('should generate _setup.mjs with correct Environment object destructuring', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -151,7 +115,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate _setup.mjs with tools.placeholders.replaceAll usage', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -162,7 +126,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate _setup.mjs with proper placeholder mapping', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/cf-d1-project')
       });
 
@@ -174,7 +138,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate _setup.mjs with logging statements', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -185,7 +149,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate project-type-specific setup script for cf-d1', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/cf-d1-project')
       });
 
@@ -196,7 +160,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate project-type-specific setup script for vite-react', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/vite-react-project')
       });
 
@@ -208,7 +172,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate idempotent setup script operations', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -221,7 +185,7 @@ describe('Template Generation Tests', () => {
 
   describe('template.json Generation', () => {
     test('should generate template.json with supportedOptions structure', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -232,7 +196,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate template.json with placeholder definitions', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -242,7 +206,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate template.json with project type information', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/cf-d1-project')
       });
 
@@ -253,7 +217,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate template.json with creation timestamp and attribution', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -263,7 +227,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate template.json with file list', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/vite-react-project')
       });
 
@@ -278,7 +242,7 @@ describe('Template Generation Tests', () => {
 
   describe('Project-Type-Specific Template Generation', () => {
     test('should generate cf-d1 specific template files', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/cf-d1-project')
       });
 
@@ -297,7 +261,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate cf-turso specific template files', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/cf-turso-project')
       });
 
@@ -314,7 +278,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate vite-react specific template files', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/vite-react-project')
       });
 
@@ -331,7 +295,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should generate generic template files', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -351,7 +315,7 @@ describe('Template Generation Tests', () => {
 
   describe('IDE Preset Support', () => {
     test('should include IDE preset support in setup script', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -362,7 +326,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should handle IDE preset application in different project types', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/vite-react-project')
       });
 
@@ -374,7 +338,7 @@ describe('Template Generation Tests', () => {
 
   describe('Error Handling in Generated Templates', () => {
     test('should include error handling in setup script', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 
@@ -385,7 +349,7 @@ describe('Template Generation Tests', () => {
     });
 
     test('should validate template metadata structure', async () => {
-      const result = await runCLI(['--dry-run'], {
+      const result = await runCommand('node', [path.join(__dirname, '../../src/bin/cli.js'), '--dry-run'], {
         cwd: join(__dirname, '../fixtures/input-projects/generic-node-project')
       });
 

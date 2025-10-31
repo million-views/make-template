@@ -1,5 +1,5 @@
 ---
-inclusion: manual
+inclusion: always
 ---
 
 # Diátaxis Documentation Framework
@@ -7,14 +7,6 @@ inclusion: manual
 ## Overview
 
 The Diátaxis framework organizes documentation into four distinct types based on user needs and context. This systematic approach ensures comprehensive, user-focused documentation that serves different purposes effectively.
-
-**Note**: This comprehensive framework is designed for complex projects with extensive documentation needs. For simple CLI tools like @m5nv/make-template, focus on:
-- Clear README with quick start
-- Basic usage examples
-- Simple troubleshooting guide
-- CLI reference (if needed)
-
-Only use this full framework if the project grows to need comprehensive documentation.
 
 ## The Four Documentation Types
 

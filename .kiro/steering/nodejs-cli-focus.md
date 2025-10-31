@@ -65,16 +65,14 @@ inclusion: always
 - Write end-to-end tests that cover all CLI arguments, error scenarios, and expected behaviors
 - Test all security validations (path traversal, injection prevention) before implementing them
 - Create tests for all preflight checks, git operations, and file operations
-- This approach saves significant time and tokens by catching issues early and providing clear implementation targets
 - **NEVER** implement functionality without tests - this wastes time and creates technical debt
 
-### Why Test-First for CLI Tools
+### Test Execution Requirements
 
-- CLI tools have complex interaction patterns (arguments, file system, external processes)
-- Error scenarios are numerous and critical to handle correctly
-- Security validations must be bulletproof from the start
-- User experience depends on consistent behavior across all scenarios
-- Debugging CLI issues without tests wastes enormous time and effort
+- Use `npm test` as the canonical entry point before every handoff or commit.
+- For targeted runs, execute `node --test test/<suite-name>.test.mjs`; never reference legacy custom runners or camelCase filenames.
+- Update or add suites in kebab-case (`*.test.mjs`) so `node --test` discovers them automatically.
+- Capture real command output from the native runner when documenting or troubleshooting behavior; do not rely on simulated output.
 
 ## Implementation Focus Areas
 

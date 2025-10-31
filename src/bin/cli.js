@@ -8,7 +8,7 @@
  */
 
 import { parseArgs } from 'node:util';
-import { access, constants } from 'node:fs/promises';
+import { access, constants, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { ConversionEngine } from '../lib/engine.js';
 import { RestorationEngine } from '../lib/restoration/restoration-engine.js';
@@ -506,6 +506,36 @@ export async function main(argv = null) {
   }
 
   try {
+    // Check if we're running on the make-template project itself
+    try {
+      const packageContent = await readFile('package.json', 'utf8');
+      const packageJson = JSON.parse(packageContent);
+
+      if (packageJson.name === 'make-template' && packageJson.bin && packageJson.bin['make-template']) {
+        console.error('Error: Cannot run make-template on the make-template project itself.');
+        console.error('This would corrupt the tool\'s own source code.');
+        console.error('If you need to test templatization, use the test fixtures or a separate project.');
+        console.error('');
+        if (Array.isArray(argv)) {
+          throw Object.assign(new Error('Cannot run on make-template project itself'), { code: 1 });
+        }
+        process.exit(1);
+      }
+    } catch (error) {
+      // If we can't read package.json, continue (other validation will catch this)
+    }
+
+    // Check if project appears to already be templated
+    try {
+      await access('.template-undo.json', constants.F_OK);
+      console.info('ℹ️  Note: .template-undo.json found. This project has been templated before.');
+      console.info('ℹ️  The existing undo log will be updated with the new templatization.');
+      console.info('ℹ️  If you need to restore to the previous state, backup .template-undo.json first.');
+      console.info('');
+    } catch {
+      // .template-undo.json doesn't exist, proceed normally
+    }
+
     // Initialize and run conversion engine
     const engine = new ConversionEngine();
     // Keep informational output visible for tests; --yes disables prompts

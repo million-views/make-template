@@ -17,6 +17,7 @@ import { UndoLogManager } from './restoration/undo-log-manager.js';
 import { Sanitizer } from './restoration/sanitizer.js';
 import { Logger } from './utils/logger.js';
 import { FSUtils } from './utils/fs-utils.js';
+import { SchemaValidator } from './utils/schema-validator.js';
 import { ERROR_CODES } from './config.js';
 import { MakeTemplateError } from './utils/errors.js';
 import { readFileAsText, detectTopLevelSideEffects, hasSetupExport } from './utils/fixture-safety.js';
@@ -33,6 +34,7 @@ export class ConversionEngine {
     this.metadataGenerator = new MetadataGenerator();
     this.undoLogManager = new UndoLogManager();
     this.sanitizer = new Sanitizer();
+    this.schemaValidator = new SchemaValidator();
   }
 
   async convert(options) {
@@ -693,6 +695,16 @@ export class ConversionEngine {
     });
 
     const metadataContent = await this.metadataGenerator.generateMetadata(analysis, options);
+
+    // Validate generated metadata against schema
+    const metadata = JSON.parse(metadataContent);
+    const validation = this.schemaValidator.validateTemplate(metadata);
+    if (!validation.valid) {
+      this.logger.error('Generated template.json does not conform to schema:');
+      validation.errors.forEach(error => this.logger.error(`  ${error.message}`));
+      throw new Error('Schema validation failed for generated template.json');
+    }
+
     actions.push({
       type: 'create',
       file: 'template.json',

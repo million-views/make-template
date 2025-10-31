@@ -85,6 +85,14 @@ Before including specific numbers, versions, or counts in documentation, ask:
 3. **Validation scripts** - Use automated tools to catch specific patterns
 4. **Team awareness** - Educate contributors on these principles
 
+## Generated Content Guardrails
+
+- **Verify before committing**: Treat AI-assisted or templated drafts as outlines. Cross-check every file path, command name, and configuration detail against the current repository state before committing.
+- **Prefer canonical entry points**: Reference stable interfaces like `npm test`, documented scripts, or shared utilities instead of enumerating individual test files or legacy runner names. If an example must mention a file, confirm the kebab-case filename in `test/` first.
+- **Standardize on `node --test`**: Always reference the native Node.js test runner when describing how to execute or add tests. Replace any mentions of custom harnesses or deprecated `node` scripts with the canonical `node --test` workflow before publishing documentation.
+- **Reproduce real outputs**: When showing command output or code snippets produced by tools, rerun the command locally and capture the actual output so examples reflect the current behavior.
+- **Reject legacy patterns**: If generated content references deprecated infrastructure (custom runners, camelCase suites, obsolete directories), rewrite it to match the modernized workflow before submitting the documentation.
+
 ## Validation and Enforcement
 
 ### Automated Checks

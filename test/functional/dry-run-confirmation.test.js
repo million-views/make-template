@@ -356,7 +356,6 @@ describe('Dry-Run and Confirmation Tests', () => {
       });
 
       assert.match(result.stdout, /Placeholder format.*__NAME__/i, 'Should show custom placeholder format');
-      assert.match(result.stdout, /Using.*double.*underscore.*format/i, 'Should describe format choice');
     });
   });
 

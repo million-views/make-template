@@ -72,9 +72,9 @@ A visitor should understand **what the project does**, **why they should care**,
 - Make contribution pathways obvious
 - Use social proof (stars, downloads, testimonials)
 
-## Content Guidelines for CLI Tools
+## Content Guidelines by Project Type
 
-### CLI Tool README Template
+### CLI Tools
 ```markdown
 # Tool Name
 Brief description of what it does and why it's useful
@@ -96,18 +96,73 @@ tool-name create my-project
 - ✅ Another compelling capability
 - ✅ Third major benefit
 
-## Options
-- `--dry-run` - Preview changes without executing
-- `--yes` - Skip confirmation prompts
-- `--help` - Show usage information
-
 ## Next Steps
-- 📚 [Getting Started Guide](docs/getting-started.md) - Your first project
-- 🛠️ [Advanced Usage](docs/advanced-usage.md) - Power user features
-- 📖 [CLI Reference](docs/cli-reference.md) - All commands and options
+- 📚 [Getting Started](docs/tutorial/getting-started.md) - Your first project in 15 minutes
+- 🛠️ [Advanced Usage](docs/guides/advanced-usage.md) - Power user features
+- 📖 [Complete Reference](docs/reference/cli-reference.md) - All commands and options
 ```
 
+### Libraries/SDKs
+```markdown
+# Library Name
+What it does and why developers should use it
 
+## Installation
+```bash
+npm install library-name
+```
+
+## Quick Example
+```javascript
+import { mainFunction } from 'library-name';
+
+const result = mainFunction({
+  option: 'value'
+});
+// Expected: { success: true, data: [...] }
+```
+
+## Key Features
+- 🚀 Performance benefit
+- 🔒 Security feature
+- 📦 Integration capability
+
+## Documentation
+- 📚 [Getting Started](docs/tutorial/getting-started.md) - Learn by building
+- 📖 [API Reference](docs/reference/api.md) - Complete method documentation
+- 💡 [Architecture Guide](docs/explanation/architecture.md) - How it works
+```
+
+### Web Applications
+```markdown
+# App Name
+Brief description of what users can accomplish
+
+## Live Demo
+[Try it now](https://demo.example.com) | [Screenshots](docs/screenshots.md)
+
+## Quick Start
+```bash
+# Clone and run locally
+git clone https://github.com/user/repo.git
+cd repo
+npm install && npm start
+# Open http://localhost:3000
+```
+
+## Features
+- ✨ User-facing feature 1
+- 🎯 User-facing feature 2
+- 🔧 User-facing feature 3
+
+## For Users
+- 📚 [User Guide](docs/tutorial/user-guide.md) - How to use the app
+- 🚨 [Support](docs/guides/troubleshooting.md) - Get help
+
+## For Developers
+- 🛠️ [Development Setup](docs/how-to/development.md) - Local development
+- 🤝 [Contributing](CONTRIBUTING.md) - How to contribute
+```
 
 ## Writing Guidelines
 

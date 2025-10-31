@@ -23,8 +23,9 @@ inclusion: always
 
 ### Command Line Arguments
 - **Validate All Inputs**: Never trust user-provided arguments
-- **Path Traversal Prevention**: Block `../`, absolute paths in file operations
-- **Placeholder Format Validation**: Ensure placeholder formats are safe
+- **Path Traversal Prevention**: Block `../`, absolute paths in template names
+- **Repository URL Validation**: Ensure repo URLs are properly formatted
+- **Branch Name Sanitization**: Validate git branch names against injection
 
 ### File System Operations
 - **Restrict Write Locations**: Only write to intended project directories
@@ -32,32 +33,43 @@ inclusion: always
 - **Temporary File Security**: Use secure temporary directories with proper cleanup
 - **Permission Checks**: Verify write permissions before attempting operations
 
-## Template Processing Security
+## Git Integration Security
 
-### File Operations
-- **Path Validation**: Ensure all file operations stay within project boundaries
-- **No Remote Operations**: This tool only processes local files, no network requests
-- **Setup Script Generation**: Generated scripts run in user's project context, not CLI tool context
+### Repository Cloning
+- **URL Validation**: Validate repository URLs to prevent malicious redirects
+- **Shallow Clones Only**: Use `--depth 1` to limit exposure
+- **No Credential Handling**: Never store or transmit git credentials
+- **Timeout Operations**: Set reasonable timeouts for git operations
+- **Error Message Sanitization**: Don't leak sensitive info in error messages
+
+### Template Repository Trust
+- **User Responsibility**: Make clear that template repos are user's responsibility
+- **No Default Execution**: Don't auto-execute any scripts without explicit user consent
+- **Setup Script Warnings**: Warn users about setup script execution risks
+- **Isolation**: Setup scripts run in project context, not CLI tool context
 
 ## Attack Surface Reduction
 
 ### Forbidden Features
 - ❌ **Remote Code Execution**: No downloading and executing arbitrary code
-- ❌ **Network Requests**: No HTTP/HTTPS requests (this tool is local-only)
+- ❌ **Network Requests**: No HTTP/HTTPS requests beyond git operations
 - ❌ **System Command Injection**: No user input in shell commands
+- ❌ **File Upload/Download**: No arbitrary file transfer capabilities
 - ❌ **Environment Variable Manipulation**: No setting system-wide env vars
 
 ### Safe Patterns Only
-- ✅ **Local File Operations**: Reading, writing, and deleting files within project boundaries
-- ✅ **Template Processing**: Basic file/directory operations and placeholder replacement
-- ✅ **Setup Script Generation**: Creating setup scripts for later execution by create-scaffold
+- ✅ **Git Clone Operations**: Using system git with user's credentials
+- ✅ **File System Copy**: Copying files within project boundaries
+- ✅ **Template Processing**: Basic file/directory operations
+- ✅ **Setup Script Execution**: In user's project context with clear warnings
 
 ## Error Handling Security
 
 ### Information Disclosure
-- **Sanitize Error Messages**: Don't leak sensitive file paths or system info
+- **Sanitize Error Messages**: Don't leak file paths, credentials, or system info
+- **Generic Network Errors**: Don't expose internal network details
 - **Path Normalization**: Normalize paths in error messages
-- **No Credential Exposure**: Ensure no sensitive data appears in logs or errors
+- **Credential Masking**: Ensure no credentials appear in logs or errors
 
 ### Fail Securely
 - **Default Deny**: When in doubt, fail safely
@@ -68,13 +80,15 @@ inclusion: always
 ## User Education
 
 ### Security Warnings
-- **Destructive Operations**: Clearly warn about file deletion and modification
-- **Setup Script Generation**: Explain that generated scripts will be executed by create-scaffold
-- **Backup Recommendations**: Suggest users backup projects before conversion
+- **Template Trust**: Warn users about trusting template repositories
+- **Setup Script Risks**: Clearly explain setup script execution implications
+- **Credential Security**: Document secure git credential practices
+- **Private Repository Access**: Explain authentication without storing credentials
 
 ### Best Practices Documentation
-- **Dry Run Usage**: Encourage users to use --dry-run first
-- **Confirmation Prompts**: Explain the importance of reviewing planned changes
+- **Repository Verification**: How to verify template repository authenticity
+- **Setup Script Review**: Encourage users to review setup scripts before execution
+- **Minimal Permissions**: Use least-privilege git access when possible
 - **Regular Updates**: Keep the CLI tool updated for security patches
 
 ## Implementation Requirements
@@ -87,17 +101,17 @@ inclusion: always
 
 ### Security Testing
 - **Path Traversal Tests**: Test against directory traversal attacks
-- **Input Fuzzing**: Test with malformed CLI arguments and file contents
-- **File Operation Bounds**: Verify all operations stay within project directory
-- **Generated Script Safety**: Verify generated setup scripts are safe
+- **Input Fuzzing**: Test with malformed inputs
+- **Repository URL Tests**: Test with malicious repository URLs
+- **Setup Script Isolation**: Verify setup scripts can't escape project context
 
 ## Red Flags to Reject
 
 Immediately reject any feature requests that involve:
-- Downloading files from the internet
-- Executing code during template conversion
+- Downloading executable files from the internet
+- Executing code from untrusted sources without user consent
 - Storing or transmitting user credentials
 - System-wide configuration changes
-- Any network operations (this tool is local-only)
-- Dynamic code execution during conversion
-- Operations outside the current project directory
+- Network operations beyond git clone
+- Dynamic code generation or evaluation
+- Privilege escalation or system modification
