@@ -10,11 +10,14 @@
 import { parseArgs } from 'node:util';
 import { access, constants, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { realpathSync } from 'node:fs';
 import { ConversionEngine } from '../lib/engine.js';
 import { RestorationEngine } from '../lib/restoration/restoration-engine.js';
 import { PROJECT_TYPES } from '../lib/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // When tests call main(argv) in-process we set this flag so error handling
 // can throw instead of calling process.exit which would kill the test runner.
@@ -586,9 +589,9 @@ process.on('uncaughtException', (error) => {
 });
 
 // If this file is executed directly (not imported), run main().
-// Compare the resolved file path to process.argv[1] which contains the
-// executed script path when run via `node src/bin/cli.js`.
-if (process.argv[1] && process.argv[1] === __filename) {
+// Check if this is the main module by comparing the resolved script path
+// with the actual file path, handling symlinks correctly.
+if (process.argv[1] && realpathSync(process.argv[1]) === __filename) {
   main().catch((error) => {
     handleError(error.message);
   });

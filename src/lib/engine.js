@@ -4,7 +4,7 @@
  * Main orchestration logic for converting projects into templates.
  */
 
-import { readFile, access, constants } from 'node:fs/promises';
+import { readFile, access, constants, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { ProjectDetector } from './analyzers/project-detector.js';
 import { PlaceholderFinder } from './analyzers/placeholder-finder.js';
@@ -1486,7 +1486,17 @@ export class ConversionEngine {
       if (deleteActions.length > 0) {
         this.logger.info('🗑️  Cleaning up unnecessary files...');
         for (const action of deleteActions) {
-          await this.cleanupProcessor.removeItem(action.path);
+          // Determine if the path is a file or directory
+          let itemType = 'file';
+          try {
+            const stats = await stat(action.path);
+            itemType = stats.isDirectory() ? 'directory' : 'file';
+          } catch (error) {
+            // If stat fails (e.g., file doesn't exist), assume it's a file
+            itemType = 'file';
+          }
+
+          await this.cleanupProcessor.removeItem(action.path, itemType);
           this.logger.info(`   ✅ Removed ${action.path}`);
         }
       }
