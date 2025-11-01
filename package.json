@@ -32,7 +32,7 @@
     "project-generator",
     "nodejs"
   ],
-  "author": "{{AUTHOR}}",
+  "author": "M5NV",
   "license": "MIT",
   "files": [
     "src/",
