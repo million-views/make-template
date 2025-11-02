@@ -304,5 +304,17 @@ describe('Placeholder Identification and Replacement Tests', () => {
       // Should not have framework-specific placeholders
       assert.doesNotMatch(result.stdout, /WORKER_NAME|CLOUDFLARE_ACCOUNT_ID|BASE_URL|HTML_TITLE/i, 'Should not have framework-specific placeholders');
     });
+
+    test('should identify JSX content placeholders in vite-react projects', async () => {
+      const result = await runCLI(['--dry-run'], {
+        cwd: join(__dirname, '../fixtures/input-projects/vite-react-project')
+      });
+
+      assert.strictEqual(result.code, 0, 'Should successfully analyze vite-react project');
+      assert.match(result.stdout, /TAGLINE.*My React App/i, 'Should identify JSX text content');
+      assert.match(result.stdout, /TEXT_CONTENT_3.*and save to test HMR/i, 'Should identify longer text content');
+      assert.match(result.stdout, /TEXT_CONTENT_4.*Click on the Vite and React logos/i, 'Should identify additional text content');
+      assert.match(result.stdout, /src\/App\.jsx/i, 'Should indicate JSX file source');
+    });
   });
 });

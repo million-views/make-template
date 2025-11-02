@@ -12,38 +12,13 @@ export class SetupGenerator {
   async generateSetup(analysis, options) {
     const { projectType, placeholders } = analysis;
 
-    // Create placeholder mapping for the setup script with proper context mapping
+    // Create placeholder mapping for the setup script using token names as keys
     const placeholderMap = {};
     placeholders.forEach(p => {
-      // Map placeholders to appropriate ctx properties based on their semantic meaning
-      if (p.name === 'PROJECT_NAME' || p.name === 'WORKER_NAME') {
-        placeholderMap[p.placeholder] = 'ctx.projectName';
-      } else if (p.name === 'PROJECT_DESCRIPTION') {
-        placeholderMap[p.placeholder] = 'ctx.projectDescription || ctx.projectName';
-      } else if (p.name === 'AUTHOR') {
-        placeholderMap[p.placeholder] = 'ctx.author || "Your Name"';
-      } else if (p.name === 'README_TITLE' || p.name === 'HTML_TITLE') {
-        placeholderMap[p.placeholder] = 'ctx.projectName';
-      } else if (p.name === 'CLOUDFLARE_ACCOUNT_ID') {
-        placeholderMap[p.placeholder] = 'ctx.cloudflareAccountId || "your-account-id"';
-      } else if (p.name === 'BASE_URL') {
-        placeholderMap[p.placeholder] = 'ctx.baseUrl || "/"';
-      } else if (p.name.startsWith('D1_BINDING_')) {
-        placeholderMap[p.placeholder] = 'ctx.databaseBinding || "DB"';
-      } else if (p.name === 'D1_DATABASE_BINDING') {
-        // Non-indexed alias for the first D1 binding
-        placeholderMap[p.placeholder] = 'ctx.databaseBinding || "DB"';
-      } else if (p.name.startsWith('D1_DATABASE_ID_')) {
-        placeholderMap[p.placeholder] = 'ctx.databaseId || "your-database-id"';
-      } else if (p.name === 'D1_DATABASE_ID') {
-        // Non-indexed alias for the first D1 database id
-        placeholderMap[p.placeholder] = 'ctx.databaseId || "your-database-id"';
-      } else if (p.name === 'REPOSITORY_URL') {
-        placeholderMap[p.placeholder] = 'ctx.repositoryUrl || `https://github.com/user/${ctx.projectName}`';
-      } else {
-        // Default fallback
-        placeholderMap[p.placeholder] = 'ctx.projectName';
-      }
+      // Extract token name from placeholder (remove {{}})
+      const token = p.name;
+      // Use ctx.inputs[token] with fallback to appropriate default
+      placeholderMap[token] = `ctx.inputs.${token} || ${this.getPlaceholderFallback(token)}`;
     });
 
     // Get list of files that need placeholder replacement
@@ -54,16 +29,13 @@ export class SetupGenerator {
     tools.logger.info(\`Setting up ${projectType} project: \${ctx.projectName}\`);
 
     // Replace placeholders using tools.placeholders.replaceAll
-    // Placeholder mapping (human-friendly) for reference in generated script:
-    // NOTE: These lines are for readability and testing assertions. The actual
-    // replacement map used by tools.placeholders.replaceAll uses the full
-    // placeholder tokens (e.g. '{{PROJECT_NAME}}') as keys.
+    // Placeholder mapping (token names as keys) for reference in generated script:
     //
-${Object.entries(placeholderMap).map(([placeholder, value]) => `    // ${placeholder.replace(/\{\{|\}\}/g, '')}: ${value}`).join('\n')}
+${Object.entries(placeholderMap).map(([token, value]) => `    // ${token}: ${value}`).join('\n')}
 
     // Explicit mapping object for tests and runtime
     const PLACEHOLDER_MAP = {
-${Object.entries(placeholderMap).map(([placeholder, value]) => `      '${placeholder}': ${value}`).join(',\n')}
+${Object.entries(placeholderMap).map(([token, value]) => `      '${token}': ${value}`).join(',\n')}
     };
 
   // Explicit target files array
@@ -156,6 +128,44 @@ ${this.generateProjectSpecificSetup(projectType)}
       await tools.json.set('package.json', 'scripts.test', 'echo "Error: no test specified" && exit 1');
     }`;
     }
+  }
+
+  getPlaceholderFallback(token) {
+    const fallbacks = {
+      'PROJECT_NAME': 'ctx.projectName',
+      'PROJECT_DESCRIPTION': 'ctx.projectDescription || ctx.projectName',
+      'AUTHOR': 'ctx.author || "Your Name"',
+      'README_TITLE': 'ctx.projectName',
+      'HTML_TITLE': '"My App"',
+      'WORKER_NAME': 'ctx.projectName',
+      'CLOUDFLARE_ACCOUNT_ID': 'ctx.cloudflareAccountId || "your-account-id"',
+      'BASE_URL': 'ctx.baseUrl || "/"',
+      'D1_BINDING_0': 'ctx.databaseBinding || "DB"',
+      'D1_DATABASE_BINDING': 'ctx.databaseBinding || "DB"',
+      'D1_DATABASE_ID_0': 'ctx.databaseId || "your-database-id"',
+      'D1_DATABASE_ID': 'ctx.databaseId || "your-database-id"',
+      'REPOSITORY_URL': '`https://github.com/user/${ctx.projectName}`',
+      'COMPANY_NAME': 'ctx.projectName',
+      'TAGLINE': '"Welcome"',
+      'LOGO_URL': '"https://example.com/logo.png"',
+      'ALT_TEXT_0': '"Logo"',
+      'ALT_TEXT_1': '"Image 1"',
+      'ALT_TEXT_2': '"Image 2"',
+      'LINK_URL_0': '"https://example.com"',
+      'LINK_URL_1': '"https://example.com/page1"',
+      'LINK_URL_2': '"https://example.com/page2"',
+      'IMAGE_URL_0': '"https://example.com/image1.png"',
+      'IMAGE_URL_1': '"https://example.com/image2.png"',
+      'IMAGE_URL_2': '"https://example.com/image3.png"',
+      'QUOTE_0': '"Great product!"',
+      'QUOTE_1': '"Excellent service!"',
+      'QUOTE_2': '"Highly recommended!"',
+      'TEXT_CONTENT_0': '"Content 0"',
+      'TEXT_CONTENT_1': '"Content 1"',
+      'TEXT_CONTENT_2': '"Content 2"'
+    };
+
+    return fallbacks[token] || 'ctx.projectName';
   }
 }
 

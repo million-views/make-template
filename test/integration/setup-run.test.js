@@ -18,7 +18,15 @@ test('run generated _setup.mjs in temp fixture copy', async () => {
     const capture = { logs: [], calls: [] };
     const tools = createMockTools(tmp, capture);
 
-    const ctx = { projectName: 'temp-project', env: {}, baseUrl: '/tmp/' };
+    const ctx = {
+      projectName: 'temp-project',
+      env: {},
+      baseUrl: '/tmp/',
+      inputs: {
+        PROJECT_NAME: 'temp-project',
+        AUTHOR: 'Test Author'
+      }
+    };
 
     const setupPath = path.join(tmp, '_setup.mjs');
     // Ensure setup exists

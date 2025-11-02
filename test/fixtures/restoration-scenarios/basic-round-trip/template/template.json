@@ -1,5 +1,6 @@
 {
   "name": "Basic Test Template",
+  "handle": "basic-test-template",
   "description": "A simple template for restoration testing",
   "placeholders": [
     {
@@ -8,7 +9,7 @@
       "default": "my-project"
     },
     {
-      "name": "PROJECT_DESCRIPTION", 
+      "name": "PROJECT_DESCRIPTION",
       "description": "A brief description of your project",
       "default": "A new project"
     },

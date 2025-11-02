@@ -6,6 +6,7 @@
 
 import { readFile, access, constants, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
+import { basename } from 'node:path';
 import { ProjectDetector } from './analyzers/project-detector.js';
 import { PlaceholderFinder } from './analyzers/placeholder-finder.js';
 import { FileScanner } from './analyzers/file-scanner.js';
@@ -41,6 +42,9 @@ export class ConversionEngine {
     try {
       // Validate essential files first
       await this.validateEssentialFiles();
+
+      // Validate directory name for template handle
+      await this.validateDirectoryName();
 
       // Analyze project
       this.logger.info('Analyzing project structure and type...');
@@ -167,6 +171,29 @@ export class ConversionEngine {
       }
       throw error;
     }
+  }
+
+  async validateDirectoryName() {
+    const currentDir = process.cwd();
+    const dirName = basename(currentDir);
+
+    // Check if directory name is a valid kebab-case handle
+    const kebabCaseRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+    if (!kebabCaseRegex.test(dirName)) {
+      throw new MakeTemplateError(
+        `Directory name "${dirName}" is not a valid template handle. Template handles must be in kebab-case format (lowercase letters, numbers, and hyphens only).`,
+        ERROR_CODES.VALIDATION_ERROR,
+        {
+          suggestions: [
+            'Rename the directory to use kebab-case format (e.g., "my-awesome-project")',
+            'Avoid spaces, uppercase letters, and special characters in directory names',
+            'Use hyphens to separate words instead of underscores or spaces'
+          ]
+        }
+      );
+    }
+
+    this.logger.info(`✅ Directory name "${dirName}" is valid for template handle`);
   }
 
   async analyzeProject(options) {
@@ -663,8 +690,16 @@ export class ConversionEngine {
   async createConversionPlan(analysis, options) {
     const actions = [];
 
+    // Collect all files that have placeholders (including JSX files)
+    const allTargetFiles = new Set(analysis.targetFiles);
+    for (const placeholder of analysis.placeholders) {
+      for (const file of placeholder.files) {
+        allTargetFiles.add(file);
+      }
+    }
+
     // Plan file modifications
-    for (const file of analysis.targetFiles) {
+    for (const file of allTargetFiles) {
       const replacements = analysis.placeholders
         .filter(p => p.files.includes(file))
         .map(p => ({ from: p.value, to: p.placeholder }));

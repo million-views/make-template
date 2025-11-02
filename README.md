@@ -77,6 +77,47 @@ npx make-template --placeholder-format "__NAME__"
 - `vite-react` - Vite-based React applications
 - `generic` - Generic Node.js projects (fallback)
 
+## Template Naming Conventions
+
+make-template generates templates with both display names and handles for compatibility with create-scaffold.
+
+### Display Name vs Handle
+
+- **Display Name** (`name` in template.json): Human-readable title shown to users
+  - Example: "Cloudflare Worker with D1 Database"
+  - Can contain spaces, capitalization, and special characters
+  - Used for presentation in create-scaffold's template listing
+
+- **Handle** (`handle` in template.json): Machine-readable identifier for template selection
+  - Example: "cloudflare-worker-with-d1-database"  
+  - Must be kebab-case (lowercase, hyphens, no spaces or special characters)
+  - Used with `create-scaffold --from-template <handle>`
+
+### Directory Name Requirements
+
+When creating templates, make-template validates that the project directory name follows kebab-case conventions:
+
+```bash
+# ✅ Valid directory names
+my-awesome-project/
+cloudflare-worker-with-d1/
+vite-react-app/
+
+# ❌ Invalid directory names  
+MyAwesomeProject/    # Contains uppercase
+my_awesome_project/  # Uses underscores
+my awesome project/  # Contains spaces
+my.awesome.project/  # Contains dots
+```
+
+### Automatic Handle Generation
+
+Handles are automatically generated from display names using these rules:
+1. Convert to lowercase
+2. Replace spaces and special characters with hyphens
+3. Remove consecutive hyphens
+4. Trim leading/trailing hyphens
+
 ## Template Restoration
 
 The restoration feature allows template authors to reverse template conversion, returning a templatized project back to a working state. This enables efficient template development and testing workflows.

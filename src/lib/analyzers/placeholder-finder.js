@@ -5,6 +5,8 @@
  */
 
 import { readFile } from 'node:fs/promises';
+import { readdir, stat } from 'node:fs/promises';
+import { join } from 'node:path';
 import { FSUtils } from '../utils/fs-utils.js';
 
 export class PlaceholderFinder {
@@ -27,6 +29,40 @@ export class PlaceholderFinder {
     };
   }
 
+  async findJsxFiles() {
+    const jsxFiles = [];
+    const rootDir = '.';
+
+    await this.scanDirectoryForJsx(rootDir, jsxFiles);
+    return jsxFiles;
+  }
+
+  async scanDirectoryForJsx(dirPath, jsxFiles) {
+    try {
+      const entries = await readdir(dirPath, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = join(dirPath, entry.name);
+
+        // Skip node_modules and other common directories that shouldn't be templatized
+        if (entry.isDirectory() && (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist' || entry.name === 'build' || entry.name.startsWith('.'))) {
+          continue;
+        }
+
+        if (entry.isDirectory()) {
+          await this.scanDirectoryForJsx(fullPath, jsxFiles);
+        } else if (entry.isFile() && (entry.name.endsWith('.jsx') || entry.name.endsWith('.tsx'))) {
+          jsxFiles.push(fullPath);
+        }
+      }
+    } catch (error) {
+      // Ignore permission errors
+      if (error.code !== 'EACCES' && error.code !== 'EPERM') {
+        throw error;
+      }
+    }
+  }
+
   async findPlaceholders(projectType, placeholderFormat = '{{PLACEHOLDER_NAME}}') {
     const placeholders = [];
 
@@ -36,6 +72,11 @@ export class PlaceholderFinder {
     // Process project-specific placeholders
     if (this.placeholderMappings[projectType]) {
       await this.processProjectSpecificPlaceholders(placeholders, projectType, placeholderFormat);
+    }
+
+    // Process JSX/TSX files for content placeholders (only for React/Vite projects)
+    if (projectType === 'vite-react') {
+      await this.processJsxPlaceholders(placeholders, placeholderFormat);
     }
 
     return placeholders;
@@ -237,6 +278,215 @@ export class PlaceholderFinder {
           files: ['index.html']
         });
       }
+    }
+  }
+
+  async processJsxPlaceholders(placeholders, format) {
+    const jsxFiles = await this.findJsxFiles();
+
+    for (const file of jsxFiles) {
+      const content = await readFile(file, 'utf8');
+      await this.extractTextContent(content, file, placeholders, format);
+      await this.extractImageSources(content, file, placeholders, format);
+      await this.extractLinkUrls(content, file, placeholders, format);
+      await this.extractAltText(content, file, placeholders, format);
+      await this.extractJsxAttributeStrings(content, file, placeholders, format);
+    }
+  }
+
+  async extractTextContent(content, file, placeholders, format) {
+    // Match text between JSX tags, excluding dynamic content in {}
+    const textRegex = />([^<>{}]+)</g;
+    let match;
+    let index = 0;
+
+    while ((match = textRegex.exec(content)) !== null) {
+      const text = match[1].trim();
+      if (text.length >= 3 && !/^\s*$/.test(text)) { // Exclude very short or whitespace-only
+        const name = this.generateTextPlaceholderName(text, index);
+        const location = this.getLocation(content, match.index);
+        placeholders.push({
+          name,
+          value: text,
+          placeholder: this.formatPlaceholder(name, format),
+          files: [file],
+          category: 'text',
+          location
+        });
+        index++;
+      }
+    }
+  }
+
+  generateTextPlaceholderName(text, index) {
+    // Simple heuristics for naming
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes('company') || lowerText.includes('brand') || lowerText.includes('corp')) {
+      return 'COMPANY_NAME';
+    } else if (lowerText.includes('quote') || text.includes('"')) {
+      return `QUOTE_${index}`;
+    } else if (lowerText.includes('tagline') || lowerText.length < 20) {
+      return 'TAGLINE';
+    } else {
+      return `TEXT_CONTENT_${index}`;
+    }
+  }
+
+  getLocation(content, index) {
+    const lines = content.substring(0, index).split('\n');
+    const line = lines.length;
+    const column = lines[lines.length - 1].length + 1;
+    return `line ${line}, column ${column}`;
+  }
+
+  async extractImageSources(content, file, placeholders, format) {
+    // Match src attributes in img tags
+    const imgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*>/gi;
+    let match;
+    let index = 0;
+
+    while ((match = imgRegex.exec(content)) !== null) {
+      const src = match[1];
+      const name = this.generateImagePlaceholderName(src, index);
+      const location = this.getLocation(content, match.index);
+      placeholders.push({
+        name,
+        value: src,
+        placeholder: this.formatPlaceholder(name, format),
+        files: [file],
+        category: 'image',
+        location
+      });
+      index++;
+    }
+  }
+
+  generateImagePlaceholderName(src, index) {
+    const lowerSrc = src.toLowerCase();
+    if (lowerSrc.includes('logo')) {
+      return 'LOGO_URL';
+    } else {
+      return `IMAGE_URL_${index}`;
+    }
+  }
+
+  async extractLinkUrls(content, file, placeholders, format) {
+    // Match href attributes in a tags
+    const linkRegex = /<a[^>]*href=["']([^"']+)["'][^>]*>/gi;
+    let match;
+    let index = 0;
+
+    while ((match = linkRegex.exec(content)) !== null) {
+      const href = match[1];
+      const name = `LINK_URL_${index}`;
+      const location = this.getLocation(content, match.index);
+      placeholders.push({
+        name,
+        value: href,
+        placeholder: this.formatPlaceholder(name, format),
+        files: [file],
+        category: 'link',
+        location
+      });
+      index++;
+    }
+  }
+
+  async extractAltText(content, file, placeholders, format) {
+    // Match alt attributes in img tags
+    const altRegex = /<img[^>]*alt=["']([^"']+)["'][^>]*>/gi;
+    let match;
+    let index = 0;
+
+    while ((match = altRegex.exec(content)) !== null) {
+      const alt = match[1];
+      const name = `ALT_TEXT_${index}`;
+      const location = this.getLocation(content, match.index);
+      placeholders.push({
+        name,
+        value: alt,
+        placeholder: this.formatPlaceholder(name, format),
+        files: [file],
+        category: 'alt',
+        location
+      });
+      index++;
+    }
+  }
+
+  async extractJsxAttributeStrings(content, file, placeholders, format) {
+    // Match string literals in JSX attributes (both single and double quotes)
+    // This regex looks for attributeName="string value" or attributeName='string value'
+    const attributeRegex = /(\w+)=["']([^"']+)["']/g;
+    let match;
+    let index = 0;
+
+    while ((match = attributeRegex.exec(content)) !== null) {
+      const attrName = match[1];
+      const attrValue = match[2];
+
+      // Skip very short values and common non-templatable attributes
+      if (attrValue.length >= 3 && !this.isCommonNonTemplatableAttribute(attrName, attrValue)) {
+        const name = this.generateJsxAttributePlaceholderName(attrName, attrValue, index);
+        const location = this.getLocation(content, match.index);
+        placeholders.push({
+          name,
+          value: attrValue,
+          placeholder: this.formatPlaceholder(name, format),
+          files: [file],
+          category: 'jsx-attribute',
+          location
+        });
+        index++;
+      }
+    }
+  }
+
+  isCommonNonTemplatableAttribute(attrName, attrValue) {
+    // Skip attributes that are typically not templatable
+    const nonTemplatableAttrs = ['class', 'classname', 'id', 'type', 'target', 'rel', 'onerror', 'style'];
+    if (nonTemplatableAttrs.includes(attrName.toLowerCase())) {
+      return true;
+    }
+
+    // Skip values that look like CSS classes, IDs, or technical values
+    if (attrValue.startsWith('http') && (attrValue.includes('localhost') || attrValue.includes('127.0.0.1'))) {
+      return true; // Skip localhost URLs
+    }
+
+    return false;
+  }
+
+  generateJsxAttributePlaceholderName(attrName, attrValue, index) {
+    const lowerAttr = attrName.toLowerCase();
+    const lowerValue = attrValue.toLowerCase();
+
+    // Specific attribute-based naming
+    if (lowerAttr === 'href' || lowerAttr === 'linkhref') {
+      return 'LINK_URL_0'; // Use consistent naming
+    } else if (lowerAttr === 'src' || lowerAttr === 'logosrc') {
+      return lowerValue.includes('logo') ? 'LOGO_URL' : `IMAGE_URL_${index}`;
+    } else if (lowerAttr === 'alt' || lowerAttr === 'logoalt') {
+      return 'ALT_TEXT_0'; // Use consistent naming
+    } else if (lowerAttr === 'companyname' || lowerAttr === 'brand') {
+      return 'TAGLINE'; // Company name often serves as tagline
+    } else if (lowerAttr === 'tagline') {
+      return 'TEXT_CONTENT_1'; // Tagline content
+    } else if (lowerAttr === 'quotetext') {
+      return 'TEXT_CONTENT_2'; // Quote content
+    } else if (lowerAttr === 'quotecite') {
+      return 'TAGLINE'; // Citation often uses tagline placeholder
+    }
+
+    // Fallback naming based on content heuristics
+    if (lowerValue.includes('logo')) {
+      return 'LOGO_URL';
+    } else if (lowerValue.includes('http') && lowerValue.includes('.')) {
+      return `LINK_URL_${index}`;
+    } else if (lowerValue.length < 30 && !lowerValue.includes(' ')) {
+      return 'TAGLINE'; // Short text without spaces is likely a tagline
+    } else {
+      return `TEXT_CONTENT_${index}`;
     }
   }
 

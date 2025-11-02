@@ -121,7 +121,7 @@ describe('Template Generation Tests', () => {
 
       assert.strictEqual(result.code, 0, 'Should successfully generate setup script');
       assert.match(result.stdout, /tools\.placeholders\.replaceAll/i, 'Should use tools.placeholders.replaceAll');
-      assert.match(result.stdout, /PROJECT_NAME: ctx\.projectName/i, 'Should map PROJECT_NAME to ctx.projectName');
+      assert.match(result.stdout, /PROJECT_NAME: ctx\.inputs\.PROJECT_NAME \|\| ctx\.projectName/i, 'Should map PROJECT_NAME to ctx.inputs.PROJECT_NAME || ctx.projectName');
       assert.match(result.stdout, /\['package\.json', 'README\.md'\]/i, 'Should specify target files array');
     });
 
